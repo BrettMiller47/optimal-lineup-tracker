@@ -1,27 +1,5 @@
-const { Builder, By, until } = require('selenium-webdriver');
-require('chromedriver');
-
-const seasonId = '2022';
-const leagueId = 84532749;
-
-const playerDataDesc = [
-  'rosterPosition',
-  'name',
-  'health',
-  'team',
-  'DUPLICATE',
-  'oppTeam',
-  'gameTime',
-  'projPts',
-  'oppRank',
-  'startPercent',
-  'rosterPercent',
-  'plusMinus',
-  'positionRank',
-  'totalPts',
-  'avgPts',
-  'prevPts'
-];
+import { Builder, By, until } from 'selenium-webdriver';
+import 'chromedriver';
 
 function getActualNumTeams(num) {
   // If 'numTeams' >14, then
@@ -34,7 +12,7 @@ function getActualNumTeams(num) {
   }
 };
 
-async function getTeams(leagueId) {
+export async function getTeams(leagueId, seasonId) {
   // Build the driver for navigating the url via Chrome
   let driver = await new Builder().forBrowser('chrome').build();
   try {
@@ -107,4 +85,3 @@ async function getTeams(leagueId) {
     await driver.quit();
   }
 };
-getTeams(leagueId);
