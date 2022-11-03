@@ -2,14 +2,6 @@ import { getWeeklyData } from "./getWeeklyData.js";
 
 let rawLineup = await getWeeklyData(2022, 2, 84532749, 1);
 
-// ! --------- CONSTRAINTS ---------
-// By POS:
-// -- QB must be QB slot
-// -- RB must be RB slot
-// -- WR must be WR slot
-// -- TE must be TE slot
-// -- FLEX can only be RB || WR || TE
-
 function getActualStartingLineup(lineupWithBench) {
   
   let startingLineup = [];
@@ -32,42 +24,203 @@ function getTotal(startingLineup) {
   return total;
 }
 
-function isEligibleQB(lineup, idxPlayer) {
-  let position = lineup[idxPlayer].POS; 
+// -------- GET POSITION ELIGIBILITY --------
+function isEligibleQB(player) {
+  let position = player.POS; 
   return position == 'QB';
 }
 
-function isEligibleRB(lineup, idxPlayer) {
-  let position = lineup[idxPlayer].POS; 
+function isEligibleRB(player) {
+  let position = player.POS; 
   return position == 'RB';
 }
 
-function isEligibleWR(lineup, idxPlayer) {
-  let position = lineup[idxPlayer].POS; 
+function isEligibleWR(player) {
+  let position = player.POS; 
   return position == 'WR';
 }
 
-function isEligibleTE(lineup, idxPlayer) {
-  let position = lineup[idxPlayer].POS; 
+function isEligibleTE(player) {
+  let position = player.POS; 
   return position == 'TE';
 }
 
-function isEligibleFLEX(lineup, idxPlayer) {
-  let position = lineup[idxPlayer].POS; 
-  return position == 'RB' || 'WR' || 'TE';
+function isEligibleFLEX(player) {
+  let position = player.POS; 
+  return (position == ('RB') || position == 'WR' || position == 'TE');
 }
 
-function isEligibleD(lineup, idxPlayer) {
-  let position = lineup[idxPlayer].POS; 
+function isEligibleD(player) {
+  let position = player.POS; 
   return position == 'D/ST';
 }
 
-function isEligibleK(lineup, idxPlayer) {
-  let position = lineup[idxPlayer].POS; 
+function isEligibleK(player) {
+  let position = player.POS; 
   return position == 'K';
 }
 
+// -------- GET HIGHEST SCORER @ POSITION --------
+function getHighestScoringQB(players) {
+  let eligiblePlayers = [];
+  
+  // Assemble the array of eligible players at the position
+  for (let i in players) {
+    let player = players[i];
+    if (player.SCORE == '--') {
+      player.SCORE = 0.0;
+    }
+    if (isEligibleQB(player)) {
+      eligiblePlayers.push(player)
+    }
+  }
+
+  let sorted = eligiblePlayers.sort(function (a, b) {
+    return a.SCORE - b.SCORE;
+  }).reverse();
+
+  // Return the highest scoring player
+  return sorted[0];
+}
+
+function getHighestScoringRB(players) {
+  let eligiblePlayers = [];
+  
+  // Assemble the array of eligible players at the position
+  for (let i in players) {
+    let player = players[i];
+    if (player.SCORE == '--') {
+      player.SCORE = 0.0;
+    }
+    if (isEligibleRB(player)) {
+      eligiblePlayers.push(player)
+    }
+  }
+
+  let sorted = eligiblePlayers.sort(function (a, b) {
+    return a.SCORE - b.SCORE;
+  }).reverse();
+
+  // Return the highest scoring player
+  return sorted[0];
+}
+
+function getHighestScoringWR(players) {
+  let eligiblePlayers = [];
+  
+  // Assemble the array of eligible players at the position
+  for (let i in players) {
+    let player = players[i];
+    if (player.SCORE == '--') {
+      player.SCORE = 0.0;
+    }
+    if (isEligibleWR(player)) {
+      eligiblePlayers.push(player)
+    }
+  }
+
+  let sorted = eligiblePlayers.sort(function (a, b) {
+    return a.SCORE - b.SCORE;
+  }).reverse();
+
+  // Return the highest scoring player
+  return sorted[0];
+}
+
+function getHighestScoringTE(players) {
+  let eligiblePlayers = [];
+  
+  // Assemble the array of eligible players at the position
+  for (let i in players) {
+    let player = players[i];
+    if (player.SCORE == '--') {
+      player.SCORE = 0.0;
+    }
+    if (isEligibleTE(player)) {
+      eligiblePlayers.push(player)
+    }
+  }
+
+  let sorted = eligiblePlayers.sort(function (a, b) {
+    return a.SCORE - b.SCORE;
+  }).reverse();
+
+  // Return the highest scoring player
+  return sorted[0];
+}
+
+function getHighestScoringFLEX(players) {
+  let eligiblePlayers = [];
+  
+  // Assemble the array of eligible players at the position
+  for (let i in players) {
+    let player = players[i];
+    if (player.SCORE == '--') {
+      player.SCORE = 0.0;
+    }
+    if (isEligibleFLEX(player)) {
+      eligiblePlayers.push(player)
+    }
+  }
+
+  let sorted = eligiblePlayers.sort(function (a, b) {
+    return a.SCORE - b.SCORE;
+  }).reverse();
+
+  // Return the highest scoring player
+  return sorted[0];
+}
+
+function getHighestScoringD(players) {
+  let eligiblePlayers = [];
+  
+  // Assemble the array of eligible players at the position
+  for (let i in players) {
+    let player = players[i];
+    if (player.SCORE == '--') {
+      player.SCORE = 0.0;
+    }
+    if (isEligibleD(player)) {
+      eligiblePlayers.push(player)
+    }
+  }
+
+  let sorted = eligiblePlayers.sort(function (a, b) {
+    return a.SCORE - b.SCORE;
+  }).reverse();
+
+  // Return the highest scoring player
+  return sorted[0];
+}
+
+function getHighestScoringK(players) {
+  let eligiblePlayers = [];
+  
+  // Assemble the array of eligible players at the position
+  for (let i in players) {
+    let player = players[i];
+    if (player.SCORE == '--') {
+      player.SCORE = 0.0;
+    }
+    if (isEligibleK(player)) {
+      eligiblePlayers.push(player)
+    }
+  }
+
+  let sorted = eligiblePlayers.sort(function (a, b) {
+    return a.SCORE - b.SCORE;
+  }).reverse();
+
+  // Return the highest scoring player
+  return sorted[0];
+}
+
+// ! assignFLEX must be done after RB, WR, and TE
 function getOptimalStartingLineup() {
+
+  //assign QB
+
+
   // getAllPlayersAtPosition
   // assignBestPlayersAtStrictPositions
   // assignRemainingPlayersAtFlexPositions
