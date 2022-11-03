@@ -1,7 +1,6 @@
 import { getWeeklyData } from "./getWeeklyData.js";
 
-let lineup = await getWeeklyData(2022, 2, 84532749, 1);
-console.log(lineup);
+let rawLineup = await getWeeklyData(2022, 2, 84532749, 1);
 
 // ! --------- CONSTRAINTS ---------
 // By POS:
@@ -11,21 +10,30 @@ console.log(lineup);
 // -- TE must be TE slot
 // -- FLEX can only be RB || WR || TE
 
-
-// getActualTotal
-export default function getActualTotal(lineup) {
+function getActualStartingLineup(lineupWithBench) {
   
-  let total = 0;
-  for (let player in lineup) {
-    let notOnBench = lineup[player].SLOT != 'Bench'; 
+  let startingLineup = [];
+  for (let player in lineupWithBench) {
+    let notOnBench = lineupWithBench[player].SLOT != 'Bench'; 
     if (notOnBench) {
-      console.log(lineup[player].PLAYER);
-      total += +(lineup[player].SCORE); 
+      startingLineup.push(lineupWithBench[player]);
     }
   }
 
+  return startingLineup;
+}
+
+function getTotal(startingLineup) {
+  
+  let total = 0;
+  for (let player in startingLineup) {
+    total += +(startingLineup[player].SCORE); 
+  }
   return total;
 }
+
+let startingLineup = getActualStartingLineup(rawLineup);
+console.log(getTotal(startingLineup));
 
 function isEligibleQB(lineup, idxPlayer) {
   let position = lineup[idxPlayer].POS; 
@@ -62,20 +70,11 @@ function isEligibleK(lineup, idxPlayer) {
   return position == 'K';
 }
 
-for (let player in lineup) {
-  console.log(lineup[player].PLAYER);
-  console.log('QB ? ' + isEligibleQB(lineup, player));
-  console.log('RB ? ' + isEligibleRB(lineup, player));
-  console.log('WR ? ' + isEligibleWR(lineup, player));
-  console.log('TE ? ' + isEligibleTE(lineup, player));
-  console.log('FLEX ? ' + isEligibleFLEX(lineup, player));
-  console.log('D ? ' + isEligibleD(lineup, player));
-  console.log('K ? ' + isEligibleK(lineup, player));
-}
-
-// getOptimalLineup
+function getOptimalStartingLineup() {
   // getAllPlayersAtPosition
   // assignBestPlayersAtStrictPositions
   // assignRemainingPlayersAtFlexPositions
+  console.log('');
+}
 
 // getOptimalTotal
