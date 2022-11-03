@@ -1,7 +1,7 @@
 import { getWeeklyData } from "./getWeeklyData.js";
 
-let data = await getWeeklyData(2022, 2, 84532749, 1);
-console.log(data);
+let lineup = await getWeeklyData(2022, 2, 84532749, 1);
+console.log(lineup);
 
 // ! --------- CONSTRAINTS ---------
 // By POS:
@@ -26,7 +26,52 @@ export default function getActualTotal(lineup) {
 
   return total;
 }
-console.log(getActualTotal(data));
+
+function isEligibleQB(lineup, idxPlayer) {
+  let position = lineup[idxPlayer].POS; 
+  return position == 'QB';
+}
+
+function isEligibleRB(lineup, idxPlayer) {
+  let position = lineup[idxPlayer].POS; 
+  return position == 'RB';
+}
+
+function isEligibleWR(lineup, idxPlayer) {
+  let position = lineup[idxPlayer].POS; 
+  return position == 'WR';
+}
+
+function isEligibleTE(lineup, idxPlayer) {
+  let position = lineup[idxPlayer].POS; 
+  return position == 'TE';
+}
+
+function isEligibleFLEX(lineup, idxPlayer) {
+  let position = lineup[idxPlayer].POS; 
+  return position == 'RB' || 'WR' || 'TE';
+}
+
+function isEligibleD(lineup, idxPlayer) {
+  let position = lineup[idxPlayer].POS; 
+  return position == 'D/ST';
+}
+
+function isEligibleK(lineup, idxPlayer) {
+  let position = lineup[idxPlayer].POS; 
+  return position == 'K';
+}
+
+for (let player in lineup) {
+  console.log(lineup[player].PLAYER);
+  console.log('QB ? ' + isEligibleQB(lineup, player));
+  console.log('RB ? ' + isEligibleRB(lineup, player));
+  console.log('WR ? ' + isEligibleWR(lineup, player));
+  console.log('TE ? ' + isEligibleTE(lineup, player));
+  console.log('FLEX ? ' + isEligibleFLEX(lineup, player));
+  console.log('D ? ' + isEligibleD(lineup, player));
+  console.log('K ? ' + isEligibleK(lineup, player));
+}
 
 // getOptimalLineup
   // getAllPlayersAtPosition
