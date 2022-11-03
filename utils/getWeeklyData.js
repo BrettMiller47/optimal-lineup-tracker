@@ -7,7 +7,7 @@ export async function getWeeklyData(seasonId, teamId, leagueId, week) {
   
   // Build the driver for navigating the url via Chrome
   let driver = await new Builder().forBrowser('chrome').build();
-  
+
   try {
     // Navigate to the team's weekly scores
     let weeklyScoreUrl = `https://fantasy.espn.com/football/team?seasonId=${seasonId}&leagueId=${leagueId}&teamId=${teamId}&scoringPeriodId=${week}&statSplit=singleScoringPeriod`
