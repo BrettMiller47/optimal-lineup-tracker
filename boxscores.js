@@ -21,12 +21,14 @@ export async function getWeeklyData(seasonId, teamId, leagueId, lastWeekWithScor
       , 15000
     );
 
+    // -------- headers[] -------- 
     // Get the table headers
     let headerEls = await driver.findElement(By.className('Table__sub-header Table__TR Table__even'));
     let headers = await headerEls.getText().then((text) =>
       Promise.resolve(text.split('\n'))      
     );
 
+    // -------- playerData[] -------- 
     // Get all playerRowEls
     let playerRowEls = await driver.findElements(By.className('Table__TR Table__TR--lg Table__odd'));
 
@@ -40,23 +42,45 @@ export async function getWeeklyData(seasonId, teamId, leagueId, lastWeekWithScor
         playersData.push(stats);
       });
     }
+
+    // -------- ISSUE HANDLING FOR headers & playersData --------
+    // Issue: HEALTH @ playersData[2] (if player is not healthy) but not in headers
+    // Resolution: add 'HEALTH' as headers[2]
+    headers.splice(2, 0, "HEALTH");
     
-    // ! For each player..
-    // for (let player in playersData) {
+    // Issue: TEAM @ playersData[2] || [3] (if HEALTH) but not in headers
+    // Resolution: Handle Issue: add 'TEAM' as headers[3]
+    headers.splice(3, 0, 'TEAM');
 
-      // Handle the following issues:
-      // 1) -- HEALTH @ playersData[2] but not in headers
-      // 2) -- TEAM @ playersData[2] (or [3] if HEALTH) but not in headers
-      // 3) -- POS @ playersData[3] (or [4] if HEALTH) but not in headers
+    // Issue: POS @ playersData[3] (or [4] if HEALTH) but not in headers
+    // Resolution: Handle Issue 4: add 'POS' as headers[4]
+    headers.splice(4, 0, 'POS');
 
-      // TODO Handle Issue 1: add 'HEALTH' as headers[2]
-      // TODO Handle Issue 2: add 'TEAM' as headers[2] (or [3] if HEALTH)
-      // TODO Handle Issue 3: add 'POS' as headers[3] (or [4] if HEALTH)
-    // }
-    console.log(headers);
-    console.log(playersData);
-    // console.log(allPlayers);
-    // return allPlayers;
+    // Issue: team 'TOTALS' data included in playersData
+    // Resolution: Loop through playersData and remove 'TOTALS' data
+    for (let player in playersData) {
+      if (playersData[player][0] == 'TOTALS') {
+        playersData.splice(player, 1)
+      }
+    }
+
+    // ! Issue: Healthy players don't have 'HEALTH' status
+    // Resolution: if Healthy, add 'H' @ playersData[2]
+    for (let player in playersData) {
+      let healthStatuses = ['P', 'Q', 'D', 'O', 'IR', 'SSPD'];
+      let playerHealth = playersData[player][2];
+      let isHealthStatus = healthStatuses.includes(playerHealth);
+      if (!isHealthStatus) {
+        playersData[player].splice(2, 0, 'H');
+      }
+      console.log(playersData[player]);
+    }
+      // console.log(playersData[player][0]);
+      // console.log(playersData[player]);
+      
+      // playersData[player].splice(2, 0, 'H');
+    // console.log(headers);
+    // console.log(playersData);
 
 
   } finally {
