@@ -13,8 +13,10 @@ function getActualNumTeams(num) {
 };
 
 export async function getTeams(leagueId, seasonId) {
+  
   // Build the driver for navigating the url via Chrome
   let driver = await new Builder().forBrowser('chrome').build();
+  
   try {
     // Navigate to the league standings
     let leagueUrl = `https://fantasy.espn.com/football/league/standings?leagueId=${leagueId}`
