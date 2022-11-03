@@ -2,7 +2,7 @@ import { Builder, By, until } from 'selenium-webdriver';
 import 'chromedriver';
 
 
-export async function getWeeklyData(seasonId, teamId, leagueId, lastWeekWithScores, teams) {
+export async function getWeeklyData(seasonId, teamId, leagueId, weeksWithData, teams) {
   
   // Build the driver for navigating the url via Chrome
   let driver = await new Builder().forBrowser('chrome').build();
@@ -64,7 +64,7 @@ export async function getWeeklyData(seasonId, teamId, leagueId, lastWeekWithScor
       }
     }
 
-    // ! Issue: Healthy players don't have 'HEALTH' status
+    // Issue: Healthy players don't have 'HEALTH' status
     // Resolution: if Healthy, add 'H' @ playersData[2]
     for (let player in playersData) {
       let healthStatuses = ['P', 'Q', 'D', 'O', 'IR', 'SSPD'];
@@ -73,15 +73,26 @@ export async function getWeeklyData(seasonId, teamId, leagueId, lastWeekWithScor
       if (!isHealthStatus) {
         playersData[player].splice(2, 0, 'H');
       }
-      console.log(playersData[player]);
     }
-      // console.log(playersData[player][0]);
-      // console.log(playersData[player]);
-      
-      // playersData[player].splice(2, 0, 'H');
-    // console.log(headers);
-    // console.log(playersData);
 
+    // --------- players[{statDesc: stat, ...}] ---------
+    let players = []
+
+    // For each player...
+    for (let iPlayers in playersData) {
+      
+      // Create a 'player' object with {statDesc: stat}
+      var cols = headers;
+      var rows = playersData[iPlayers];
+      var player = {};
+      for (var i = 0; i < cols.length; i++) {
+        player[cols[i]] = rows[i];
+      }
+
+      // Add the 'player' to 'players'
+      players.push(player);
+    }
+    console.log(players)
 
   } finally {
     await driver.quit();
