@@ -32,9 +32,6 @@ function getTotal(startingLineup) {
   return total;
 }
 
-let startingLineup = getActualStartingLineup(rawLineup);
-console.log(getTotal(startingLineup));
-
 function isEligibleQB(lineup, idxPlayer) {
   let position = lineup[idxPlayer].POS; 
   return position == 'QB';
