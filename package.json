@@ -1,6 +1,6 @@
 {
   "name": "FFS! Fantasy Football Slouch",
-	"author": "Brett D. Miller",
+  "author": "Brett D. Miller",
   "dependencies": {
     "chromedriver": "^106.0.1",
     "dotenv": "^16.0.3",

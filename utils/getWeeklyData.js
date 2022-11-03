@@ -1,16 +1,14 @@
 import { Builder, By, until } from 'selenium-webdriver';
 import 'chromedriver';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-
-export async function getWeeklyData(seasonId, teamId, leagueId, weeksWithData, teams) {
+export async function getWeeklyData(seasonId, teamId, leagueId, week) {
   
   // Build the driver for navigating the url via Chrome
   let driver = await new Builder().forBrowser('chrome').build();
   
   try {
-    // TODO: for loop through all previous weeks
-    const week = 1;
-
     // Navigate to the team's weekly scores
     let weeklyScoreUrl = `https://fantasy.espn.com/football/team?seasonId=${seasonId}&leagueId=${leagueId}&teamId=${teamId}&scoringPeriodId=${week}&statSplit=singleScoringPeriod`
     await driver.get(weeklyScoreUrl);
@@ -92,10 +90,10 @@ export async function getWeeklyData(seasonId, teamId, leagueId, weeksWithData, t
       // Add the 'player' to 'players'
       players.push(player);
     }
-    console.log(players)
+
+    return players;
 
   } finally {
     await driver.quit();
   }
 }
-getWeeklyData(2022, 2, 84532749, 8, 'teams');
