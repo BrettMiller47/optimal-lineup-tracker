@@ -2,28 +2,6 @@ import { getWeeklyData } from "./getWeeklyData.js";
 
 let rawLineup = await getWeeklyData(2022, 2, 84532749, 1);
 
-function getActualStartingLineup(lineupWithBench) {
-  
-  let startingLineup = [];
-  for (let player in lineupWithBench) {
-    let notOnBench = lineupWithBench[player].SLOT != 'Bench'; 
-    if (notOnBench) {
-      startingLineup.push(lineupWithBench[player]);
-    }
-  }
-
-  return startingLineup;
-}
-
-function getTotal(startingLineup) {
-  
-  let total = 0.0;
-  for (let player in startingLineup) {
-    total += +(startingLineup[player].SCORE); 
-  }
-  return total.toFixed(2);
-}
-
 // -------- GET POSITION ELIGIBILITY --------
 function isEligibleQB(player) {
   let position = player.POS; 
@@ -215,19 +193,43 @@ function getHighestScoringK(players) {
   return sorted[0];
 }
 
-function getStartingSlots(lineupWithBench) {
+function getStartingSlots(rawLineup) {
   let startingSlots = [];
-  for (let player in lineupWithBench) {
-    let notOnBench = lineupWithBench[player].SLOT != 'Bench'; 
+  for (let player in rawLineup) {
+    let notOnBench = rawLineup[player].SLOT != 'Bench'; 
     if (notOnBench) {
-      startingSlots.push(lineupWithBench[player].SLOT);
+      startingSlots.push(rawLineup[player].SLOT);
     }
   }
 
   return startingSlots;
 }
 
-export default function getOptimalStartingLineup(rawLineup) {
+// -------- EXPORTED FUNCTIONS ---------
+
+export function getTotal(startingLineup) {
+  
+  let total = 0.0;
+  for (let player in startingLineup) {
+    total += +(startingLineup[player].SCORE); 
+  }
+  return total.toFixed(2);
+}
+
+export function getActualStartingLineup(rawLineup) {
+  
+  let startingLineup = [];
+  for (let player in rawLineup) {
+    let notOnBench = rawLineup[player].SLOT != 'Bench'; 
+    if (notOnBench) {
+      startingLineup.push(rawLineup[player]);
+    }
+  }
+
+  return startingLineup;
+}
+
+export function getOptimalStartingLineup(rawLineup) {
 
   let startingSlots = getStartingSlots(rawLineup);
   let optimalStartingLineup = [];
@@ -288,6 +290,3 @@ export default function getOptimalStartingLineup(rawLineup) {
 
   return optimalStartingLineup;
 }
-
-let optimal = getOptimalStartingLineup(rawLineup);
-console.log(getTotal(optimal));
