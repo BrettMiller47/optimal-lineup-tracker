@@ -1,6 +1,4 @@
-import { getWeeklyData } from "./getWeeklyData.js";
-
-let rawLineup = await getWeeklyData(2022, 2, 84532749, 1);
+import { getWeeklyRawLineup } from "./getWeeklyRawLineup.js";
 
 // -------- GET POSITION ELIGIBILITY --------
 function isEligibleQB(player) {
@@ -206,7 +204,6 @@ function getStartingSlots(rawLineup) {
 }
 
 // -------- EXPORTED FUNCTIONS ---------
-
 export function getTotal(startingLineup) {
   
   let total = 0.0;

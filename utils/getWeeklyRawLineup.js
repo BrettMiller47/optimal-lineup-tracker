@@ -1,7 +1,7 @@
 import { Builder, By, until } from 'selenium-webdriver';
 import 'chromedriver';
 
-export async function getWeeklyData(seasonId, teamId, leagueId, week) {
+export async function getWeeklyRawLineup(seasonId, teamId, leagueId, week) {
   
   // Build the driver for navigating the url via Chrome
   let driver = await new Builder().forBrowser('chrome').build();
