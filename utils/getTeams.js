@@ -1,7 +1,5 @@
 import { Builder, By, until } from 'selenium-webdriver';
 import 'chromedriver';
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 function getActualNumTeams(num) {
   // If 'numTeams' >14, then

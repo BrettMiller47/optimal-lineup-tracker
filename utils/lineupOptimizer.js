@@ -17,11 +17,11 @@ function getActualStartingLineup(lineupWithBench) {
 
 function getTotal(startingLineup) {
   
-  let total = 0;
+  let total = 0.0;
   for (let player in startingLineup) {
     total += +(startingLineup[player].SCORE); 
   }
-  return total;
+  return total.toFixed(2);
 }
 
 // -------- GET POSITION ELIGIBILITY --------
@@ -215,16 +215,79 @@ function getHighestScoringK(players) {
   return sorted[0];
 }
 
-// ! assignFLEX must be done after RB, WR, and TE
-function getOptimalStartingLineup() {
+function getStartingSlots(lineupWithBench) {
+  let startingSlots = [];
+  for (let player in lineupWithBench) {
+    let notOnBench = lineupWithBench[player].SLOT != 'Bench'; 
+    if (notOnBench) {
+      startingSlots.push(lineupWithBench[player].SLOT);
+    }
+  }
 
-  //assign QB
-
-
-  // getAllPlayersAtPosition
-  // assignBestPlayersAtStrictPositions
-  // assignRemainingPlayersAtFlexPositions
-  console.log('');
+  return startingSlots;
 }
 
-// getOptimalTotal
+export default function getOptimalStartingLineup(rawLineup) {
+
+  let startingSlots = getStartingSlots(rawLineup);
+  let optimalStartingLineup = [];
+
+  // Fill the starting slots with the highest scorer at the position (fill FLEX last)
+  for (let slot in startingSlots) {
+    let position = startingSlots[slot];
+    
+    // Depending on the slot's position...
+    // -- get the highest scoring player at the position
+    // -- add the player to the optimalStartingLineup 
+    // -- remove the player from the rawLineup
+    let player = {};
+    switch (position) {
+      case 'QB':
+        player = getHighestScoringQB(rawLineup);
+        optimalStartingLineup.push(player);
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
+        break
+      
+      case 'RB':
+        player = getHighestScoringRB(rawLineup);
+        optimalStartingLineup.push(player);
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
+        break
+      
+      case 'WR':
+        player = getHighestScoringWR(rawLineup);
+        optimalStartingLineup.push(player);
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
+        break
+      
+      case 'TE':
+        player = getHighestScoringTE(rawLineup);
+        optimalStartingLineup.push(player);
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
+        break
+      
+      case 'D/ST':
+        player = getHighestScoringD(rawLineup);
+        optimalStartingLineup.push(player);
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
+        break
+      
+      case 'K':
+        player = getHighestScoringK(rawLineup);
+        optimalStartingLineup.push(player);
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
+        break
+      
+      case 'FLEX':
+        player = getHighestScoringFLEX(rawLineup);
+        optimalStartingLineup.push(player);
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
+        break
+    }
+  }
+
+  return optimalStartingLineup;
+}
+
+let optimal = getOptimalStartingLineup(rawLineup);
+console.log(getTotal(optimal));

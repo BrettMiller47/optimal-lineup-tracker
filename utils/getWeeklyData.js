@@ -1,7 +1,5 @@
 import { Builder, By, until } from 'selenium-webdriver';
 import 'chromedriver';
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 export async function getWeeklyData(seasonId, teamId, leagueId, week) {
   
