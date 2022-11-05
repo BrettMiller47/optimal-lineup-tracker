@@ -10,10 +10,30 @@ let teams = await getTeams(leagueId, seasonId);
 // Step 1) Get the raw 'dataByWeek'
 let dataByWeek = await getDataByWeek(seasonId, leagueId, teams, weeksWithData);
 
-// Step 2) Optimize the raw 'dataByWeek'
+// Step 2) Optimize the raw 'dataByWeek' and return the weeks sorted by 
 let optimizedDataByWeek = optimizeDataByWeek(dataByWeek);
 
 // Step 3) Get the cumulative pointsFromOptimal by team
+for (let team in teams) {
+  teams[team].totalActual = 0;
+  teams[team].totalOptimal = 0;
+  teams[team].totalFromOptimal = 0;
+  
+  for (let week in dataByWeek) {
+    let weeklyData = dataByWeek[week];
+
+    for (let i in weeklyData) {
+      let isTeamInTeams = teams[team].teamId === weeklyData[i].teamId;
+      if (isTeamInTeams) {
+        teams[team].totalActual += Number(weeklyData[i].actualScore);
+        teams[team].totalOptimal += Number(weeklyData[i].optimalScore);
+        teams[team].totalFromOptimal += Number(weeklyData[i].pointsFromOptimal);
+      }
+    }
+  }
+}
+
+console.log(teams);
 
 // Step 4) Get the most recent week's pointsFromOptimal by team
 
@@ -81,7 +101,6 @@ function optimizeWeeklyData(weeklyData, teams) {
 function optimizeDataByWeek(dataByWeek) {
   
   for (let week in dataByWeek) {
-
     // Get the 'optimizedWeeklyData'
     let weeklyData = dataByWeek[week]; 
     let optimizedWeeklyData = optimizeWeeklyData(weeklyData, teams);
