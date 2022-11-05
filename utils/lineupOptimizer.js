@@ -1,5 +1,3 @@
-import { getWeeklyRawLineup } from "./getWeeklyRawLineup.js";
-
 // -------- GET POSITION ELIGIBILITY --------
 function isEligibleQB(player) {
   let position = player.POS; 

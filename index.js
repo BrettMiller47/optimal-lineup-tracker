@@ -1,10 +1,10 @@
 import { getTeams } from './utils/getTeams.js';
-import { getWeeklyRawLineup } from './utils/getWeeklyRawLineup.js';
+import { getDataByWeek } from './utils/getDataByWeek.js';
 import { getActualStartingLineup, getOptimalStartingLineup, getTotal } from './utils/lineupOptimizer.js';
 
 const seasonId = '2022';
 const leagueId = 84532749;
-const weeksWithData = 8;
+const weeksWithData = 2;
 let teams = await getTeams(leagueId, seasonId);
 
 // Step 1) Get the raw 'dataByWeek'
@@ -37,28 +37,6 @@ for (let team in teams) {
 let sorted = teams.sort((a, b) => (a.totalFromOptimal > b.totalFromOptimal) ? 1 : -1);
 console.table(sorted);
 // Step 5) Get the most recent week's pointsFromOptimal by team
-
-// Function to retrieve 'dataByWeek'
-async function getDataByWeek(seasonId, leagueId, teams, weeksWithData) {
-
-  // Loop through 'weeksWithData' to populate 'dataByWeek' (an array of 'weeklyData' arrays)
-  let dataByWeek = [];
-  for (let week = 1; week < weeksWithData + 1; week++) {
-    
-    // Loop through 'teams' to populate this week's 'weeklyData' -- [{teamId: , data:}, {teamId: , data:}, ...]
-    let weeklyData = [];
-    for (let team in teams) {
-      let teamId = teams[team].teamId;
-      let rawLineup = await getWeeklyRawLineup(seasonId, teamId, leagueId, week);
-      weeklyData.push({ teamId: teamId, rawLineup: rawLineup });
-    }
-
-    // Push the 'weeklyData' to 'dataByWeek'
-    dataByWeek.push(weeklyData);
-  }
-
-  return dataByWeek;
-}
 
 // Function to update 'weeklyData' with newly added info:
 // -- name
