@@ -4,7 +4,7 @@ import { getActualStartingLineup, getOptimalStartingLineup, getTotal } from './u
 
 const seasonId = '2022';
 const leagueId = 84532749;
-const weeksWithData = 2;
+const weeksWithData = 8;
 let teams = await getTeams(leagueId, seasonId);
 
 // Step 1) Get the raw 'dataByWeek'
@@ -33,9 +33,10 @@ for (let team in teams) {
   }
 }
 
-console.log(teams);
-
-// Step 4) Get the most recent week's pointsFromOptimal by team
+// Step 4) Sort 'teams' by 'totalFromOptimal'
+let sorted = teams.sort((a, b) => (a.totalFromOptimal > b.totalFromOptimal) ? 1 : -1);
+console.table(sorted);
+// Step 5) Get the most recent week's pointsFromOptimal by team
 
 // Function to retrieve 'dataByWeek'
 async function getDataByWeek(seasonId, leagueId, teams, weeksWithData) {
