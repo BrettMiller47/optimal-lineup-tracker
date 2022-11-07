@@ -211,7 +211,7 @@ export function getTotal(startingLineup) {
   return total.toFixed(2);
 }
 
-export function getActualStartingLineup(rawLineup) {
+export function getStartingLineup(rawLineup) {
   
   let startingLineup = [];
   for (let player in rawLineup) {

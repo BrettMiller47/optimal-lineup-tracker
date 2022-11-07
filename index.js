@@ -1,5 +1,5 @@
 import { getTeams } from './utils/getTeams.js';
-import { getActualStartingLineup, getOptimalStartingLineup, getTotal } from './utils/lineupOptimizer.js';
+import { getStartingLineup, getOptimalStartingLineup, getTotal } from './utils/lineupOptimizer.js';
 
 const seasonId = '2022';
 const leagueId = 84532749;
@@ -8,11 +8,41 @@ const weeksWithData = 2;
 // Step 1) Get the teams data
 let teams = await getTeams(leagueId, seasonId, weeksWithData);
 
-// Step 2) Add the teams' optimized data and append it to teams 
-let teamsWithOptimal = addOptimalLineups(teams);
-console.log(teamsWithOptimal);
+let teamsWithStarting = addStartingLineups(teams);
+
+// Step 2) Add the 'teams' optimized data and append it to teams 
+let teamsWithOptimalAndStarting = addOptimalLineups(teamsWithStarting);
+console.log(teamsWithOptimalAndStarting);
+// Step 3) Add the totals & deficit for startingLineups compared to optimalLineups 
 
 // ------------------------------------------------------------
+function addStartingLineups(teams) {
+  
+  // Loop through each team
+  for (let team in teams) {
+    let startingLineups = [];
+  
+    // Loop through the team's weeks of data to populate 'optimalLineups'...
+    for (let i = 0; i < weeksWithData; i++) {
+      // Get the team's optimal lineup for that week
+      let rawLineup = teams[team].dataByWeek[i];
+      let startingLineup = getStartingLineup(rawLineup);
+
+      // Push the 'optimalLineup' to the array of 'optimalLineups'
+      startingLineups.push(
+        {
+          week: (i + 1),
+          startingLineup: startingLineup
+        }
+      );
+    }
+    // Push the 'optimalLineups' for the team to 'teams[team]'
+    teams[team].startingLineups = startingLineups;
+  }
+
+  return teams;
+}
+
 function addOptimalLineups(teams) {
   
   // Loop through each team
@@ -34,7 +64,6 @@ function addOptimalLineups(teams) {
         }
       );
     }
-    console.log(optimalLineups);
     // Push the 'optimalLineups' for the team to 'teams[team]'
     teams[team].optimalLineups = optimalLineups;
   }
@@ -42,7 +71,7 @@ function addOptimalLineups(teams) {
   return teams;
 }
 
-// function addTotals(teams){}
+function addTotals(teams){}
 
 
 
