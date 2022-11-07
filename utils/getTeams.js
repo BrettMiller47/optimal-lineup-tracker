@@ -12,7 +12,7 @@ function getActualNumTeams(num) {
   }
 };
 
-export async function getTeams(leagueId, seasonId) {
+export async function getTeams(leagueId, seasonId, weeksWithData) {
   
   // Build the driver for navigating the url via Chrome
   let driver = await new Builder().forBrowser('chrome').build();
@@ -22,68 +22,156 @@ export async function getTeams(leagueId, seasonId) {
     let leagueUrl = `https://fantasy.espn.com/football/league/standings?leagueId=${leagueId}`
     await driver.get(leagueUrl);
 
-    // Wait for the standings table to load
-    let classToFind = 'teamName truncate';
+    // Wait for the standings table to load, then get all teamIds
     await driver.wait(until.elementLocated(
-      By.className(classToFind))
+      By.className('teamName truncate'))
       , 15000
     );
+    let teamEls = await driver.findElements(By.className('teamName truncate'));
 
-    // Get all teamIds -- [{teamName: teamId}]
-    let teamEls = await driver.findElements(By.className(classToFind));
-
-    // Handle/ignore rankings by division
+    // Handle/ignore rankings by division to get the 'actualNumTeams'
     let fetchedNumTeams = teamEls.length;
     let actualNumTeams = getActualNumTeams(teamEls.length);
-    let iTeamsStart = fetchedNumTeams - actualNumTeams;
-    
-    // Get the rankings
-    let rankings = [];
-    for (let iTeamEls = iTeamsStart; iTeamEls < fetchedNumTeams; iTeamEls++) {
-      let name = await teamEls[iTeamEls].getText().then((name) => Promise.resolve(name));
-      rankings.push(name);
-    }
 
-    // Loop through each team's individual page
+    // Loop through the 'actualNumTeams' to populate 'teams' with:
+    // -- teamId: INT
+    // -- name: STRING
+    // -- rank: STRING
+    // -- dataByWeek: []
     let teams = [];
     for (let iTeams = 0; iTeams < actualNumTeams; iTeams++) {
 
-      // Get the team url
-      let teamId = iTeams + 1;
-      let teamUrl = `https://fantasy.espn.com/football/team?leagueId=${leagueId}&teamId=${teamId}&seasonId=${seasonId}`;
+      // Navigate to the team's week 1 url
+      let id = iTeams + 1;
+      let teamUrl = `https://fantasy.espn.com/football/team?seasonId=${seasonId}&leagueId=${leagueId}&teamId=${id}&scoringPeriodId=1&statSplit=singleScoringPeriod`;
       await driver.get(teamUrl);
       
-      // Wait until the page has loaded
+      // Wait until the page has loaded, then get all team names
       await driver.wait(until.elementLocated(
-        By.className(classToFind))
+        By.className('Table__sub-header Table__TR Table__even'))
         , 15000
       );
+      let teamEl = await driver.findElement(By.className('teamName truncate'));
+      let name = await teamEl.getText().then((text) => Promise.resolve(text));
 
-      // Get teamName
-      let teamEl = await driver.findElement(By.className(classToFind));
-      let name = await teamEl.getText().then((name) => Promise.resolve(name));
+      // Get the 'headers' for the weekly data table (only once)
+      if (iTeams == 0) {
 
-      // Append rank, teamName, teamId, and teamUrl to 'teamsData'
-      teams.push({ name: name, teamId: teamId });
-    }
+        // Get the headers
+        let headerEls = await driver.findElement(By.className('Table__sub-header Table__TR Table__even'));
+        var headers = await headerEls.getText().then((text) =>
+          Promise.resolve(text.split('\n'))
+        );
 
-    // Loop through the rankings
-    for (let iRank = 0; iRank < rankings.length; iRank++) {
-      let rankTeam = rankings[iRank];
-
-      // Find the team (from rankings) in 'teams'
-      for (let iTeams in teams) {
-        let teamsTeam = teams[iTeams].name;
+        // Issue: HEALTH @ playersData[2] (if player is not healthy) but not in headers
+        // Resolution: add 'HEALTH' as headers[2]
+        headers.splice(2, 0, "HEALTH");
         
-        // If the currently indexed ranked team is currently indexed in 'teams'
-        if (rankTeam == teamsTeam) {
-          // Add the ranking to 'teams'
-          teams[iTeams].rank = iRank + 1;
-        }
+        // Issue: TEAM @ playersData[2] || [3] (if HEALTH) but not in headers
+        // Resolution: Handle Issue: add 'TEAM' as headers[3]
+        headers.splice(3, 0, 'TEAM');
+
+        // Issue: POS @ playersData[3] (or [4] if HEALTH) but not in headers
+        // Resolution: Handle Issue 4: add 'POS' as headers[4]
+        headers.splice(4, 0, 'POS');
       }
+
+      // ! Get the dataByWeek
+      let dataByWeek = [];
+      for (let week = 1; week < weeksWithData + 1; week++) {
+        
+        let weeklyDataIsEmpty = true;
+        while (weeklyDataIsEmpty) {
+          // Navigate to the team's weekly scores (remember: the first iteration is already at the week 1 page)
+          if (week != 1) {
+            let weeklyScoreUrl = `https://fantasy.espn.com/football/team?seasonId=${seasonId}&leagueId=${leagueId}&teamId=${id}&scoringPeriodId=${week}&statSplit=singleScoringPeriod`
+            await driver.get(weeklyScoreUrl);
+          }
+
+          // Push the 'rawLineup' to 'dataByWeek'
+          var weeklyData = await getWeeklyData(driver, headers); 
+
+          if (weeklyData.length != 0) {
+            weeklyDataIsEmpty = false;
+          }
+        };
+        dataByWeek.push(
+          {
+            week: week,
+            weeklyData: weeklyData
+          }
+        );
+      }
+
+      // ! Append id, name, and dataByWeek to 'teams'
+      teams.push(
+        {
+          id: id,
+          name: name,
+          dataByWeek: dataByWeek
+        }
+      );
     }
+
     return teams;
+
   } finally {
     await driver.quit();
   }
 };
+
+async function getWeeklyData(driver, headers) {
+
+  // -------- playersData[] -------- 
+  // Get all playerRowEls
+  let playerRowEls = await driver.findElements(By.className('Table__TR Table__TR--lg Table__odd'));
+
+  // For each playerRowEl get the player's stats and push to 'playersData'
+  let playersData = []
+  for (let i = 0; i < playerRowEls.length; i++) {
+
+    // Loop through the data points in the playerRowEl
+    await playerRowEls[i].getText().then((text) => {
+      let stats = text.split('\n');
+      playersData.push(stats);
+    });
+  }
+
+  // Issue: team 'TOTALS' data included in playersData
+  // Resolution: Loop through playersData and remove 'TOTALS' data
+  for (let player in playersData) {
+    if (playersData[player][0] == 'TOTALS') {
+      playersData.splice(player, 1)
+    }
+  }
+
+  // Issue: Healthy players don't have 'HEALTH' status
+  // Resolution: if Healthy, add 'H' @ playersData[2]
+  for (let player in playersData) {
+    let healthStatuses = ['P', 'Q', 'D', 'O', 'IR', 'SSPD'];
+    let playerHealth = playersData[player][2];
+    let isHealthStatus = healthStatuses.includes(playerHealth);
+    if (!isHealthStatus) {
+      playersData[player].splice(2, 0, 'H');
+    }
+  }
+
+  // --------- rawLineup[] ---------
+  let weeklyData = [];
+  // For each player...
+  for (let iPlayers in playersData) {
+    
+    // Create a 'player' object with {statDesc: stat}
+    let cols = headers;
+    let rows = playersData[iPlayers];
+    let player = {};
+    for (let i = 0; i < cols.length; i++) {
+      player[cols[i]] = rows[i];
+    }
+
+    // Add the 'player' to 'rawLineup'
+    weeklyData.push(player);
+  }
+
+  return weeklyData;
+}
