@@ -1,41 +1,77 @@
 import { getTeams } from './utils/getTeams.js';
-import { getDataByWeek } from './utils/getDataByWeek.js';
 import { getActualStartingLineup, getOptimalStartingLineup, getTotal } from './utils/lineupOptimizer.js';
 
 const seasonId = '2022';
 const leagueId = 84532749;
 const weeksWithData = 2;
-let teams = await getTeams(leagueId, seasonId);
 
-// Step 1) Get the raw 'dataByWeek'
-let dataByWeek = await getDataByWeek(seasonId, leagueId, teams, weeksWithData);
+// Step 1) Get the teams data
+let teams = await getTeams(leagueId, seasonId, weeksWithData);
 
-// Step 2) Optimize the raw 'dataByWeek' and return the weeks sorted by 
-let optimizedDataByWeek = optimizeDataByWeek(dataByWeek);
+// Step 2) Add the teams' optimized data and append it to teams 
+let teamsWithOptimal = addOptimalLineups(teams);
+console.log(teamsWithOptimal);
 
-// Step 3) Get the cumulative pointsFromOptimal by team
-for (let team in teams) {
-  teams[team].totalActual = 0;
-  teams[team].totalOptimal = 0;
-  teams[team].totalFromOptimal = 0;
+// ------------------------------------------------------------
+function addOptimalLineups(teams) {
   
-  for (let week in dataByWeek) {
-    let weeklyData = dataByWeek[week];
+  // Loop through each team
+  for (let team in teams) {
+    let optimalLineups = [];
+    console.log('--------' + teams[team].name);
+  
+    // Loop through the team's weeks of data to populate 'optimalLineups'...
+    for (let i = 0; i < weeksWithData; i++) {
+      // Get the team's optimal lineup for that week
+      let rawLineup = teams[team].dataByWeek[i];
+      let optimalLineup = getOptimalStartingLineup(rawLineup);
 
-    for (let i in weeklyData) {
-      let isTeamInTeams = teams[team].teamId === weeklyData[i].teamId;
-      if (isTeamInTeams) {
-        teams[team].totalActual += Number(weeklyData[i].actualScore);
-        teams[team].totalOptimal += Number(weeklyData[i].optimalScore);
-        teams[team].totalFromOptimal += Number(weeklyData[i].pointsFromOptimal);
-      }
+      // Push the 'optimalLineup' to the array of 'optimalLineups'
+      optimalLineups.push(
+        {
+          week: (i + 1),
+          optimalLineup: optimalLineup
+        }
+      );
     }
+    console.log(optimalLineups);
+    // Push the 'optimalLineups' for the team to 'teams[team]'
+    teams[team].optimalLineups = optimalLineups;
   }
+
+  return teams;
 }
 
+// function addTotals(teams){}
+
+
+
+// ------------------------------------------------------------
+
+
+// Step 3) Get the cumulative pointsFromOptimal by team
+// for (let team in teams) {
+//   teams[team].totalActual = 0;
+//   teams[team].totalOptimal = 0;
+//   teams[team].totalFromOptimal = 0;
+  
+//   for (let week in dataByWeek) {
+//     let weeklyData = dataByWeek[week];
+
+//     for (let i in weeklyData) {
+//       let isTeamInTeams = teams[team].teamId === weeklyData[i].teamId;
+//       if (isTeamInTeams) {
+//         teams[team].totalActual += Number(weeklyData[i].actualScore);
+//         teams[team].totalOptimal += Number(weeklyData[i].optimalScore);
+//         teams[team].totalFromOptimal += Number(weeklyData[i].pointsFromOptimal);
+//       }
+//     }
+//   }
+// }
+
 // Step 4) Sort 'teams' by 'totalFromOptimal'
-let sorted = teams.sort((a, b) => (a.totalFromOptimal > b.totalFromOptimal) ? 1 : -1);
-console.table(sorted);
+// let sorted = teams.sort((a, b) => (a.totalFromOptimal > b.totalFromOptimal) ? 1 : -1);
+// console.table(sorted);
 // Step 5) Get the most recent week's pointsFromOptimal by team
 
 // Function to update 'weeklyData' with newly added info:

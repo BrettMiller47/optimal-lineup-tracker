@@ -4,6 +4,6 @@ import { getActualStartingLineup, getOptimalStartingLineup, getTotal } from './u
 
 const seasonId = '2022';
 const leagueId = 84532749;
-const weeksWithData = 8;
+const weeksWithData = 2;
 let teams = await getTeams(leagueId, seasonId, weeksWithData);
 console.table(teams);
