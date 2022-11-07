@@ -36,7 +36,6 @@ export async function getTeams(leagueId, seasonId, weeksWithData) {
     // Loop through the 'actualNumTeams' to populate 'teams' with:
     // -- teamId: INT
     // -- name: STRING
-    // -- rank: STRING
     // -- dataByWeek: []
     let teams = [];
     for (let iTeams = 0; iTeams < actualNumTeams; iTeams++) {
@@ -57,7 +56,7 @@ export async function getTeams(leagueId, seasonId, weeksWithData) {
       // Get the 'headers' for the weekly data table (only once)
       if (iTeams == 0) {
 
-        // Get the headers
+        // Get the headers text as an array
         let headerEls = await driver.findElement(By.className('Table__sub-header Table__TR Table__even'));
         var headers = await headerEls.getText().then((text) =>
           Promise.resolve(text.split('\n'))
@@ -76,25 +75,28 @@ export async function getTeams(leagueId, seasonId, weeksWithData) {
         headers.splice(4, 0, 'POS');
       }
 
-      // ! Get the dataByWeek
+      // Get the dataByWeek
       let dataByWeek = [];
       for (let week = 1; week < weeksWithData + 1; week++) {
         
         let weeklyDataIsEmpty = true;
         while (weeklyDataIsEmpty) {
-          // Navigate to the team's weekly scores (remember: the first iteration is already at the week 1 page)
+          // Navigate to the team's weekly score (remember: the first iteration is already at the week 1 page)
           if (week != 1) {
             let weeklyScoreUrl = `https://fantasy.espn.com/football/team?seasonId=${seasonId}&leagueId=${leagueId}&teamId=${id}&scoringPeriodId=${week}&statSplit=singleScoringPeriod`
             await driver.get(weeklyScoreUrl);
           }
 
-          // Push the 'rawLineup' to 'dataByWeek'
+          // Get this week's 'weeklyData'
           var weeklyData = await getWeeklyData(driver, headers); 
 
+          // Satisfy the while loop condition if the 'weeklyData' was collected
           if (weeklyData.length != 0) {
             weeklyDataIsEmpty = false;
           }
         };
+        
+        // Push the 'weeklyData' to 'dataByWeek'
         dataByWeek.push(
           {
             week: week,
@@ -103,7 +105,7 @@ export async function getTeams(leagueId, seasonId, weeksWithData) {
         );
       }
 
-      // ! Append id, name, and dataByWeek to 'teams'
+      // Push 'id', 'name', and 'dataByWeek' to 'teams'
       teams.push(
         {
           id: id,
@@ -156,7 +158,7 @@ async function getWeeklyData(driver, headers) {
     }
   }
 
-  // --------- rawLineup[] ---------
+  // --------- weeklyData[] ---------
   let weeklyData = [];
   // For each player...
   for (let iPlayers in playersData) {
@@ -169,7 +171,7 @@ async function getWeeklyData(driver, headers) {
       player[cols[i]] = rows[i];
     }
 
-    // Add the 'player' to 'rawLineup'
+    // Add the 'player' to 'weeklyData'
     weeklyData.push(player);
   }
 
