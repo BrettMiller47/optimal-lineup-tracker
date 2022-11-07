@@ -283,5 +283,6 @@ export function getOptimalStartingLineup(rawLineup) {
     }
   }
 
+  console.log(optimalStartingLineup);
   return optimalStartingLineup;
 }

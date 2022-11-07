@@ -97,12 +97,7 @@ export async function getTeams(leagueId, seasonId, weeksWithData) {
         };
         
         // Push the 'weeklyData' to 'dataByWeek'
-        dataByWeek.push(
-          {
-            week: week,
-            weeklyData: weeklyData
-          }
-        );
+        dataByWeek.push(weeklyData);
       }
 
       // Push 'id', 'name', and 'dataByWeek' to 'teams'

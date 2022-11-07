@@ -5,78 +5,26 @@ const seasonId = '2022';
 const leagueId = 84532749;
 const weeksWithData = 2;
 
-// Step 1) Get the teams data
+// Step 1) Get the teams' data
 let teams = await getTeams(leagueId, seasonId, weeksWithData);
 
-let teamsWithStarting = addStartingLineups(teams);
+// Step 2) Get the starting and optimal lineups
+let teamsStarting = pushStartingLineups(teams);
+let teamsOptimal = pushOptimalLineups(teamsStarting);
 
-// Step 2) Add the 'teams' optimized data and append it to teams 
-let teamsWithOptimalAndStarting = addOptimalLineups(teamsWithStarting);
-console.log(teamsWithOptimalAndStarting);
-// Step 3) Add the totals & deficit for startingLineups compared to optimalLineups 
+// !Step 3) Get the totals & deficit data from the lineups
 
 // ------------------------------------------------------------
-function addStartingLineups(teams) {
-  
-  // Loop through each team
-  for (let team in teams) {
-    let startingLineups = [];
-  
-    // Loop through the team's weeks of data to populate 'optimalLineups'...
-    for (let i = 0; i < weeksWithData; i++) {
-      // Get the team's optimal lineup for that week
-      let rawLineup = teams[team].dataByWeek[i];
-      let startingLineup = getStartingLineup(rawLineup);
 
-      // Push the 'optimalLineup' to the array of 'optimalLineups'
-      startingLineups.push(
-        {
-          week: (i + 1),
-          startingLineup: startingLineup
-        }
-      );
-    }
-    // Push the 'optimalLineups' for the team to 'teams[team]'
-    teams[team].startingLineups = startingLineups;
-  }
-
-  return teams;
-}
-
-function addOptimalLineups(teams) {
-  
-  // Loop through each team
-  for (let team in teams) {
-    let optimalLineups = [];
-    console.log('--------' + teams[team].name);
-  
-    // Loop through the team's weeks of data to populate 'optimalLineups'...
-    for (let i = 0; i < weeksWithData; i++) {
-      // Get the team's optimal lineup for that week
-      let rawLineup = teams[team].dataByWeek[i];
-      let optimalLineup = getOptimalStartingLineup(rawLineup);
-
-      // Push the 'optimalLineup' to the array of 'optimalLineups'
-      optimalLineups.push(
-        {
-          week: (i + 1),
-          optimalLineup: optimalLineup
-        }
-      );
-    }
-    // Push the 'optimalLineups' for the team to 'teams[team]'
-    teams[team].optimalLineups = optimalLineups;
-  }
-
-  return teams;
-}
-
-function addTotals(teams){}
+function pushTotals(teams){}
 
 
 
 // ------------------------------------------------------------
 
+// Step 4) Sort 'teams' by 'totalFromOptimal'
+// let sorted = teams.sort((a, b) => (a.totalFromOptimal > b.totalFromOptimal) ? 1 : -1);
+// console.table(sorted);
 
 // Step 3) Get the cumulative pointsFromOptimal by team
 // for (let team in teams) {
@@ -98,60 +46,46 @@ function addTotals(teams){}
 //   }
 // }
 
-// Step 4) Sort 'teams' by 'totalFromOptimal'
-// let sorted = teams.sort((a, b) => (a.totalFromOptimal > b.totalFromOptimal) ? 1 : -1);
-// console.table(sorted);
-// Step 5) Get the most recent week's pointsFromOptimal by team
-
-// Function to update 'weeklyData' with newly added info:
-// -- name
-// -- actualStartingLineup & optimalStartingLineup
-// -- actualScore & optimalScore
-// -- pointsFromOptimal
-function optimizeWeeklyData(weeklyData, teams) {
+function pushStartingLineups(teams) {
   
-  for (let team in weeklyData) {
-    
-    // Get and add the team name
-    let teamId = weeklyData[team].teamId;
-    let teamsIdx = teams.findIndex((item) => item.teamId === teamId);
-    let name = teams[teamsIdx].name;
-    weeklyData[team].name = name;
+  // Loop through each team
+  for (let team in teams) {
+    let startingLineups = [];
+  
+    // Loop through the team's weeks of data to populate 'optimalLineups'...
+    for (let i = 0; i < weeksWithData; i++) {
+      // Get the team's optimal lineup for that week
+      let rawLineup = teams[team].dataByWeek[i];
+      let startingLineup = getStartingLineup(rawLineup);
 
-    // Get the 'rawLineup' (includes bench players)
-    let rawLineup = weeklyData[team].rawLineup;
-
-    // Get ''actualStartingLineup' & 'optimalStartingLineup'
-    let actualStartingLineup = getActualStartingLineup(rawLineup);
-    let optimalStartingLineup = getOptimalStartingLineup(rawLineup);
-
-    // Get 'actualScore' & 'optimalScore'
-    let actualScore = getTotal(actualStartingLineup);
-    let optimalScore = getTotal(optimalStartingLineup);
-    let pointsFromOptimal = (optimalScore - actualScore).toFixed(2)
-
-    // Push the new info to 'weeklyData' as new key: value pairs
-    weeklyData[team].actualStartingLineup = actualStartingLineup;
-    weeklyData[team].optimalStartingLineup = optimalStartingLineup;
-    weeklyData[team].actualScore = actualScore;
-    weeklyData[team].optimalScore = optimalScore;
-    weeklyData[team].pointsFromOptimal = pointsFromOptimal;
+      // Push the 'optimalLineup' to the array of 'optimalLineups'
+      startingLineups.push(startingLineup);
+    }
+    // Push the 'optimalLineups' for the team to 'teams[team]'
+    teams[team].startingLineups = startingLineups;
   }
 
-  return weeklyData;
+  return teams;
 }
 
-// Function to update 'dataByWeek'
-function optimizeDataByWeek(dataByWeek) {
+function pushOptimalLineups(teams) {
   
-  for (let week in dataByWeek) {
-    // Get the 'optimizedWeeklyData'
-    let weeklyData = dataByWeek[week]; 
-    let optimizedWeeklyData = optimizeWeeklyData(weeklyData, teams);
+  // Loop through each team
+  for (let team in teams) {
+    let optimalLineups = [];
+  
+    // Loop through the team's weeks of data to populate 'optimalLineups'...
+    for (let i = 0; i < weeksWithData; i++) {
+      // Get the team's optimal lineup for that week
+      let rawLineup = teams[team].dataByWeek[i];
+      let optimalLineup = getOptimalStartingLineup(rawLineup);
 
-    // Replace the weeklyData with the optimizedWeeklyData
-    dataByWeek[week] = optimizedWeeklyData;
+      // Push the 'optimalLineup' to the array of 'optimalLineups'
+      optimalLineups.push(optimalLineup);
+    }
+    // Push the 'optimalLineups' for the team to 'teams[team]'
+    teams[team].optimalLineups = optimalLineups;
   }
 
-  return dataByWeek;
+  return teams;
 }
