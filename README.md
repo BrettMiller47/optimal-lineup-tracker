@@ -1,10 +1,12 @@
 # start-sit-deficit
+
 A resource for determing who is the best start/sit decision maker in an ESPN fantasy football league.
 
 ## User Story
 
-Given that I am a member of an ESPN fantasy football league,&nbps
-When I go to the 'optimal-lineup-tracker',&nbps
+```
+Given that I am a member of an ESPN fantasy football league,
+When I go to the 'optimal-lineup-tracker',
 Then I am prompted to enter my league id.
 
 Given that I entered my league id,
@@ -22,3 +24,14 @@ Then I am presented with the league members sorted by the 'start/sit deficit' wi
 Given that I am a member of a fantasy league,
 When I view the THIS PAST WEEK data for my league,
 Then I am presented with each league member's 'actual' and 'optimal' lineup cards in order of the 'start/sit deficit'.
+```
+
+## Preview
+
+Home Page:
+
+![landing page](./assets/images/excalidraw-home.png)
+
+League Summary:
+
+![league summary](./assets/images/excalidraw-summary.png)
