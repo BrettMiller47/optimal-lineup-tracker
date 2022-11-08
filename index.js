@@ -1,9 +1,10 @@
+import { start } from 'chromedriver';
 import { getTeams } from './utils/getTeams.js';
 import { getStartingLineup, getOptimalStartingLineup, getTotal } from './utils/lineupOptimizer.js';
 
 const seasonId = '2022';
 const leagueId = 84532749;
-const weeksWithData = 2;
+const weeksWithData = 8;
 
 // Step 1) Get the teams' data
 let teams = await getTeams(leagueId, seasonId, weeksWithData);
@@ -12,39 +13,19 @@ let teams = await getTeams(leagueId, seasonId, weeksWithData);
 let teamsStarting = pushStartingLineups(teams);
 let teamsOptimal = pushOptimalLineups(teamsStarting);
 
-// !Step 3) Get the totals & deficit data from the lineups
+// Step 3) Get the totals & deficit data from the lineups
+let teamsTotals = pushTotals(teamsOptimal);
 
-// ------------------------------------------------------------
+// Step 4) Sort 'teamsTotal' by 'totalDeficit'
+let sorted = teamsTotals.sort((a, b) => (a.totalDeficit > b.totalDeficit) ? 1 : -1);
 
-function pushTotals(teams){}
+let filtered = sorted.filter(item => item.name === 'Plaxico Burress');
+console.table(filtered);
 
-
-
-// ------------------------------------------------------------
-
-// Step 4) Sort 'teams' by 'totalFromOptimal'
-// let sorted = teams.sort((a, b) => (a.totalFromOptimal > b.totalFromOptimal) ? 1 : -1);
-// console.table(sorted);
-
-// Step 3) Get the cumulative pointsFromOptimal by team
-// for (let team in teams) {
-//   teams[team].totalActual = 0;
-//   teams[team].totalOptimal = 0;
-//   teams[team].totalFromOptimal = 0;
-  
-//   for (let week in dataByWeek) {
-//     let weeklyData = dataByWeek[week];
-
-//     for (let i in weeklyData) {
-//       let isTeamInTeams = teams[team].teamId === weeklyData[i].teamId;
-//       if (isTeamInTeams) {
-//         teams[team].totalActual += Number(weeklyData[i].actualScore);
-//         teams[team].totalOptimal += Number(weeklyData[i].optimalScore);
-//         teams[team].totalFromOptimal += Number(weeklyData[i].pointsFromOptimal);
-//       }
-//     }
-//   }
-// }
+console.log('Plaxico Burress')
+for (let i = 0; i < weeksWithData; i++) {
+  console.log(`Week ${i + 1}: ${filtered.startingLineups}`);
+}
 
 function pushStartingLineups(teams) {
   
@@ -85,6 +66,35 @@ function pushOptimalLineups(teams) {
     }
     // Push the 'optimalLineups' for the team to 'teams[team]'
     teams[team].optimalLineups = optimalLineups;
+  }
+
+  return teams;
+}
+
+function pushTotals(teams) {
+  
+  for (let team in teams) {
+    
+    let totalActual = 0;
+    let totalOptimal = 0;
+    let totalDeficit = 0;
+    for (let i = 0; i < weeksWithData; i++){
+
+      let actualStarters = teams[team].startingLineups[i];
+      let weeklyActual = Math.round(getTotal(actualStarters) * (10 ^ 2)) / (10 ^ 2);
+      totalActual += weeklyActual;
+      
+      let optimalStarters = teams[team].optimalLineups[i];
+      let weeklyOptimal = Math.round(getTotal(optimalStarters) * (10 ^ 2)) / (10 ^ 2);
+      totalOptimal += weeklyOptimal
+
+      let weeklyDeficit = weeklyOptimal - weeklyActual;
+      totalDeficit += weeklyDeficit;
+    }
+
+    teams[team].totalActual = totalActual;
+    teams[team].totalOptimal = totalOptimal;
+    teams[team].totalDeficit = totalDeficit;
   }
 
   return teams;

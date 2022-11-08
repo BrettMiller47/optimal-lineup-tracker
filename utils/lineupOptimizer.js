@@ -204,11 +204,15 @@ function getStartingSlots(rawLineup) {
 // -------- EXPORTED FUNCTIONS ---------
 export function getTotal(startingLineup) {
   
-  let total = 0.0;
+  let total = 0.00;
   for (let player in startingLineup) {
-    total += +(startingLineup[player].SCORE); 
+    let score = parseFloat(startingLineup[player].SCORE);
+    console.log(`score = ${score}`);
+    let scoreDecimals = Math.round(score * 100)/100;
+    console.log(`scoreDecimals = ${scoreDecimals}`);
+    total += scoreDecimals; 
   }
-  return total.toFixed(2);
+  return total;
 }
 
 export function getStartingLineup(rawLineup) {
@@ -283,6 +287,5 @@ export function getOptimalStartingLineup(rawLineup) {
     }
   }
 
-  console.log(optimalStartingLineup);
   return optimalStartingLineup;
 }

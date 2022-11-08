@@ -86,6 +86,12 @@ export async function getTeams(leagueId, seasonId, weeksWithData) {
             let weeklyScoreUrl = `https://fantasy.espn.com/football/team?seasonId=${seasonId}&leagueId=${leagueId}&teamId=${id}&scoringPeriodId=${week}&statSplit=singleScoringPeriod`
             await driver.get(weeklyScoreUrl);
           }
+          
+          // Wait until the page has loaded, then get all team names
+          await driver.wait(until.elementLocated(
+            By.className('game-status-inline flex'))
+            , 15000
+          );
 
           // Get this week's 'weeklyData'
           var weeklyData = await getWeeklyData(driver, headers); 
