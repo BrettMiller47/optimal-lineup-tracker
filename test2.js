@@ -1,0 +1,188 @@
+// ! Testing Rick's Market week 7 score
+// import { getTotal } from './utils/lineupOptimizer.js';
+
+// let actualStarters = [
+//   {
+//     "SLOT": "QB",
+//     "PLAYER": "Justin Herbert",
+//     "HEALTH": "H",
+//     "TEAM": "LAC",
+//     "POS": "QB",
+//     "OPP": "Sea",
+//     "STATUS": "L 23-37",
+//     "PROJ": "26.4",
+//     "SCORE": "22.55",
+//     "OPRK": "21st",
+//     "%ST": "76.2",
+//     "%ROST": "98.4",
+//     "+/-": "-0.4",
+//     "PRK": "13",
+//     "FPTS": "168.5",
+//     "AVG": "21.1",
+//     "LAST": "--"
+//   },
+//   {
+//     "SLOT": "RB",
+//     "PLAYER": "Derrick Henry",
+//     "HEALTH": "H",
+//     "TEAM": "Ten",
+//     "POS": "RB",
+//     "OPP": "Ind",
+//     "STATUS": "W 19-10",
+//     "PROJ": "17.8",
+//     "SCORE": "15.3",
+//     "OPRK": "20th",
+//     "%ST": "98.2",
+//     "%ROST": "99.9",
+//     "+/-": "0",
+//     "PRK": "2",
+//     "FPTS": "162.0",
+//     "AVG": "20.3",
+//     "LAST": "--"
+//   },
+//   {
+//     "SLOT": "RB",
+//     "PLAYER": "Kenyan Drake",
+//     "HEALTH": "H",
+//     "TEAM": "Bal",
+//     "POS": "RB",
+//     "OPP": "Cle",
+//     "STATUS": "W 23-20",
+//     "PROJ": "6.3",
+//     "SCORE": "0.5",
+//     "OPRK": "29th",
+//     "%ST": "12.0",
+//     "%ROST": "46.2",
+//     "+/-": "+27.8",
+//     "PRK": "34",
+//     "FPTS": "67.4",
+//     "AVG": "9.6",
+//     "LAST": "--"
+//   },
+//   {
+//     "SLOT": "WR",
+//     "PLAYER": "Brandon Aiyuk",
+//     "HEALTH": "H",
+//     "TEAM": "SF",
+//     "POS": "WR",
+//     "OPP": "KC",
+//     "STATUS": "L 23-44",
+//     "PROJ": "9.1",
+//     "SCORE": "11.7",
+//     "OPRK": "25th",
+//     "%ST": "24.9",
+//     "%ROST": "87.1",
+//     "+/-": "0",
+//     "PRK": "19",
+//     "FPTS": "92.0",
+//     "AVG": "11.5",
+//     "LAST": "--"
+//   },
+//   {
+//     "SLOT": "WR",
+//     "PLAYER": "Jakobi Meyers",
+//     "HEALTH": "H",
+//     "TEAM": "NE",
+//     "POS": "WR",
+//     "OPP": "Chi",
+//     "STATUS": "L 14-33",
+//     "PROJ": "9.1",
+//     "SCORE": "10.4",
+//     "OPRK": "12th",
+//     "%ST": "18.5",
+//     "%ROST": "80.4",
+//     "+/-": "+2",
+//     "PRK": "30",
+//     "FPTS": "82.6",
+//     "AVG": "11.8",
+//     "LAST": "--"
+//   },
+//   {
+//     "SLOT": "TE",
+//     "PLAYER": "T.J. Hockenson",
+//     "HEALTH": "H",
+//     "TEAM": "Min",
+//     "POS": "TE",
+//     "OPP": "*BYE*",
+//     "STATUS": "--",
+//     "PROJ": "--",
+//     "SCORE": 0,
+//     "OPRK": "--",
+//     "%ST": "82.9",
+//     "%ROST": "97.0",
+//     "+/-": "+0.7",
+//     "PRK": "5",
+//     "FPTS": "84.0",
+//     "AVG": "10.5",
+//     "LAST": "--"
+//   },
+//   {
+//     "SLOT": "FLEX",
+//     "PLAYER": "Rhamondre Stevenson",
+//     "HEALTH": "H",
+//     "TEAM": "NE",
+//     "POS": "RB",
+//     "OPP": "Chi",
+//     "STATUS": "L 14-33",
+//     "PROJ": "11.9",
+//     "SCORE": "19.8",
+//     "OPRK": "28th",
+//     "%ST": "37.6",
+//     "%ROST": "95.7",
+//     "+/-": "+1.7",
+//     "PRK": "8",
+//     "FPTS": "132.0",
+//     "AVG": "14.7",
+//     "LAST": "--"
+//   },
+//   {
+//     "SLOT": "D/ST",
+//     "PLAYER": "Jets D/ST",
+//     "HEALTH": "H",
+//     "TEAM": "NYJ",
+//     "POS": "D/ST",
+//     "OPP": "@Den",
+//     "STATUS": "W 16-9",
+//     "PROJ": "9.9",
+//     "SCORE": "10.0",
+//     "OPRK": "28th",
+//     "%ST": "10.6",
+//     "%ROST": "32.2",
+//     "+/-": "-24.5",
+//     "PRK": "6",
+//     "FPTS": "102.0",
+//     "AVG": "11.3",
+//     "LAST": "--"
+//   },
+//   {
+//     "SLOT": "K",
+//     "PLAYER": "Chris Boswell",
+//     "HEALTH": "Q",
+//     "TEAM": "Pit",
+//     "POS": "K",
+//     "OPP": "@Mia",
+//     "STATUS": "L 10-16",
+//     "PROJ": "8.2",
+//     "SCORE": "5.0",
+//     "OPRK": "10th",
+//     "%ST": "4.0",
+//     "%ROST": "11.9",
+//     "+/-": "-11.6",
+//     "PRK": "21",
+//     "FPTS": "53.0",
+//     "AVG": "7.6",
+//     "LAST": "--"
+//   }
+// ]
+
+// let weeklyActual = Math.round(getTotal(actualStarters) * (10 ^ 2)) / (10 ^ 2);
+// console.log(weeklyActual);
+
+// ! Testing Data Collection
+import { getTeams2 } from './utils/getTeams2.js';
+import { getStartingLineup, getOptimalStartingLineup, getTotal } from './utils/lineupOptimizer.js';
+
+// Step 1) Get the teams
+const seasonId = '2022';
+const leagueId = 84532749;
+let teams = await getTeams2(leagueId, seasonId);

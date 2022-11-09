@@ -207,10 +207,9 @@ export function getTotal(startingLineup) {
   let total = 0.00;
   for (let player in startingLineup) {
     let score = parseFloat(startingLineup[player].SCORE);
-    console.log(`score = ${score}`);
     let scoreDecimals = Math.round(score * 100)/100;
-    console.log(`scoreDecimals = ${scoreDecimals}`);
     total += scoreDecimals; 
+    console.log(`${startingLineup[player].PLAYER} scored ${scoreDecimals} = ${total}`)
   }
   return total;
 }

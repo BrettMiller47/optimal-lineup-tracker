@@ -1,21 +1,11 @@
+import * as fs from 'fs';
 import { getTeams } from './utils/getTeams.js';
 import { getStartingLineup, getOptimalStartingLineup, getTotal } from './utils/lineupOptimizer.js';
 
+// Step 1) Get the teams
 const seasonId = '2022';
 const leagueId = 84532749;
-const weeksWithData = 8;
-
-let plaxicoWeekly = [
-  133.75,
-  140.4,
-  126.7,
-  94.6,
-  152.8,
-  117.1,
-  100.2,
-  121.7
-]
-
+const weeksWithData = 9;
 let teams = await getTeams(leagueId, seasonId, weeksWithData);
 
 // Step 2) Get the starting and optimal lineups
@@ -28,9 +18,15 @@ let teamsTotals = pushTotals(teamsOptimal);
 // Step 4) Sort 'teamsTotal' by 'totalDeficit'
 let sorted = teamsTotals.sort((a, b) => (a.totalDeficit > b.totalDeficit) ? 1 : -1);
 
-let filtered = sorted.filter(item => item.name === 'Plaxico Burress');
-console.table(filtered);
+// Step 5) Write the sorted teams to JSON format
+let data = JSON.stringify(sorted, null, 2);
 
+fs.writeFile('sorted.json', data, err => {
+  if (err) {
+    throw err
+  }
+  console.log('JSON data is saved.')
+})
 
 function pushStartingLineups(teams) {
   
@@ -97,9 +93,9 @@ function pushTotals(teams) {
       totalDeficit += weeklyDeficit;
     }
 
-    teams[team].totalActual = totalActual;
-    teams[team].totalOptimal = totalOptimal;
-    teams[team].totalDeficit = totalDeficit;
+    teams[team].totalActual = Math.round(totalActual*100)/100;
+    teams[team].totalOptimal = Math.round(totalOptimal*100)/100;
+    teams[team].totalDeficit = Math.round(totalDeficit*100)/100;
   }
 
   return teams;
