@@ -20,26 +20,37 @@ export async function getTeams2(leagueId, seasonId) {
   try {
     // Navigate to the League Members page
     await driver.get(`https://fantasy.espn.com/football/tools/leaguemembers?leagueId=${leagueId}`);
-
+    
     // Team icons load last, so wait for icons to ensure the page is fully loaded
-    let teamIconClass = 'Image team-logo w-100';
-    let customTeamIconClass = 'Image team-logo w-100';
-    try {
-      // Find a standard icon
-      await driver.wait(until.elementLocated(By.className(teamIconClass)), 15000);
-    } catch {
-      // Find a custom icon
-      await driver.wait(until.elementLocated(By.className(customTeamIconClass)), 15000);
-    }
+    await waitForIconsToLoad(driver);
 
     // Get an array of 'teams' where team = {id: , name:}
     let teams = await getIdsAndNames(driver);
-    console.log(teams);
+
+    // Navigate to the Schedule page
+    await driver.get(`https://fantasy.espn.com/football/league/schedule?leagueId=${leagueId}`);
+
+    // Team icons load last, so wait for icons to ensure the page is fully loaded
+    await waitForIconsToLoad(driver);
+
+    // Get the 'weeklyMatchups' with data
+    let weeklyMatchups = await getWeeklyMatchups(driver);
+    
+    // ? console logging
+    for (let i = 0; i < weeklyMatchups.length; i++){
+      console.log('\n\n');
+      console.log(`Week ${i + 1}`);
+      
+      console.log(weeklyMatchups[i]);
+    }
 
   } finally {
     await driver.quit();
   }
 };
+
+// ----------------------------------
+// -------- HELPER FUNCTIONS --------
 
 async function getIdsAndNames(driver) {
   let teams = [];
@@ -60,58 +71,72 @@ async function getIdsAndNames(driver) {
   return teams;
 }
 
-async function getWeeklyData(driver, headers) {
-
-  // -------- playersData[] -------- 
-  // Get all playerRowEls
-  let playerRowEls = await driver.findElements(By.className('Table__TR Table__TR--lg Table__odd'));
-
-  // For each playerRowEl get the player's stats and push to 'playersData'
-  let playersData = []
-  for (let i = 0; i < playerRowEls.length; i++) {
-
-    // Loop through the data points in the playerRowEl
-    await playerRowEls[i].getText().then((text) => {
-      let stats = text.split('\n');
-      playersData.push(stats);
-    });
+async function waitForIconsToLoad(driver) {
+  let teamIconClass = 'Image team-logo w-100';
+  let customTeamIconClass = 'Image team-logo w-100';
+  try {
+    // Find a standard icon
+    await driver.wait(until.elementLocated(By.className(teamIconClass)), 15000);
+  } catch {
+    // Find a custom icon
+    await driver.wait(until.elementLocated(By.className(customTeamIconClass)), 15000);
   }
+}
 
-  // Issue: team 'TOTALS' data included in playersData
-  // Resolution: Loop through playersData and remove 'TOTALS' data
-  for (let player in playersData) {
-    if (playersData[player][0] == 'TOTALS') {
-      playersData.splice(player, 1)
-    }
-  }
+function getMatchupDetails(arr) {
 
-  // Issue: Healthy players don't have 'HEALTH' status
-  // Resolution: if Healthy, add 'H' @ playersData[2]
-  for (let player in playersData) {
-    let healthStatuses = ['P', 'Q', 'D', 'O', 'IR', 'SSPD'];
-    let playerHealth = playersData[player][2];
-    let isHealthStatus = healthStatuses.includes(playerHealth);
-    if (!isHealthStatus) {
-      playersData[player].splice(2, 0, 'H');
-    }
-  }
-
-  // --------- weeklyData[] ---------
-  let weeklyData = [];
-  // For each player...
-  for (let iPlayers in playersData) {
+  // arr = [homeTeam, homeRecord, homeManager, homeScore, awayScore, awayManager, awayTeam, awayRecord]
+  // If (homeScore == 0 && awayScore == 0), then this matchup is yet to be played
+  if (arr[3] == 0 && arr[4] == 0) {
+    return -1;
+  } else if (arr.length != 8) {
+    return -2;
+  } else {
     
-    // Create a 'player' object with {statDesc: stat}
-    let cols = headers;
-    let rows = playersData[iPlayers];
-    let player = {};
-    for (let i = 0; i < cols.length; i++) {
-      player[cols[i]] = rows[i];
+    // Return an array = [homeTeam, homeScore, awayTeam, awayScore]
+    let matchupDetails = {
+      homeTeam: arr[0],
+      homeScore: arr[3],
+      awayTeam: arr[6],
+      awayScore: arr[4]
+    };
+    return matchupDetails;
+  }
+}
+
+async function getWeeklyMatchups(driver) {
+  
+  // Get the matchup tables for the weeks with data
+  let regTables = await driver.findElements(By.className('ResponsiveTable'));
+  
+  // Loop through each week's table...
+  let weeklyMatchups = [];
+  for (let iTable = 0; iTable < regTables.length; iTable++){
+    
+    // Loop through each matchupEl in the table to populate 'matchupsInWeek'
+    let matchupsInWeek = []
+    let matchupEls = await regTables[iTable].findElements(By.className('Table__TR Table__TR--md Table__odd'));
+    for (let iMatch = 0; iMatch < matchupEls.length; iMatch++){
+
+      // Get the matchup's 'detailsArr' from the matchupEl
+      await matchupEls[iMatch].getText().then((text) => {
+        let detailsArr = text.split('\n');
+
+        // Use a helper function to return a 'matchup' object given the 'detailsArr'
+        let matchup = getMatchupDetails(detailsArr);
+
+        // If 'matchup' is not an error code due to lack of score data...
+        if (matchup != -1 && matchup != -2) {
+          matchupsInWeek.push(matchup);
+        }
+      });
     }
 
-    // Add the 'player' to 'weeklyData'
-    weeklyData.push(player);
+    // If 'matchupsInWeek' contains data (i.e this week has score data), then push to 'weeklyMatchups'
+    if (0 < matchupsInWeek.length) {
+      weeklyMatchups.push(matchupsInWeek);      
+    }
   }
 
-  return weeklyData;
+  return weeklyMatchups;
 }
