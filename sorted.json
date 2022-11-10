@@ -3034,7 +3034,8 @@
     ],
     "totalActual": 1057.7,
     "totalOptimal": 1118.7,
-    "totalDeficit": 61
+    "totalDeficit": 61,
+    "perfectWeeks": 3
   },
   {
     "name": "Team Ruggs",
@@ -6081,7 +6082,8 @@
     ],
     "totalActual": 1006.7,
     "totalOptimal": 1094.3,
-    "totalDeficit": 87.6
+    "totalDeficit": 87.6,
+    "perfectWeeks": 2
   },
   {
     "name": "Barrie’s Breakfast",
@@ -9118,7 +9120,8 @@
     ],
     "totalActual": 924.55,
     "totalOptimal": 1013.95,
-    "totalDeficit": 89.4
+    "totalDeficit": 89.4,
+    "perfectWeeks": 1
   },
   {
     "name": "Rick's Market",
@@ -12155,7 +12158,8 @@
     ],
     "totalActual": 1060.15,
     "totalOptimal": 1162.5,
-    "totalDeficit": 102.35
+    "totalDeficit": 102.35,
+    "perfectWeeks": 3
   },
   {
     "name": "Pitts Stain",
@@ -15192,7 +15196,8 @@
     ],
     "totalActual": 966.4,
     "totalOptimal": 1074.4,
-    "totalDeficit": 108
+    "totalDeficit": 108,
+    "perfectWeeks": 0
   },
   {
     "name": "King of the Hill",
@@ -18229,7 +18234,8 @@
     ],
     "totalActual": 1055.55,
     "totalOptimal": 1165.95,
-    "totalDeficit": 110.4
+    "totalDeficit": 110.4,
+    "perfectWeeks": 0
   },
   {
     "name": "Kevin’s Band of Retards",
@@ -21266,7 +21272,8 @@
     ],
     "totalActual": 1014.3,
     "totalOptimal": 1136.5,
-    "totalDeficit": 122.2
+    "totalDeficit": 122.2,
+    "perfectWeeks": 0
   },
   {
     "name": "GruGru Smith-Gruster",
@@ -24303,7 +24310,8 @@
     ],
     "totalActual": 938.6,
     "totalOptimal": 1062.2,
-    "totalDeficit": 123.6
+    "totalDeficit": 123.6,
+    "perfectWeeks": 0
   },
   {
     "name": "Champ Champ",
@@ -27340,7 +27348,8 @@
     ],
     "totalActual": 1038.6,
     "totalOptimal": 1166.4,
-    "totalDeficit": 127.8
+    "totalDeficit": 127.8,
+    "perfectWeeks": 1
   },
   {
     "name": "Glizzy Gladiators",
@@ -30377,7 +30386,8 @@
     ],
     "totalActual": 857.55,
     "totalOptimal": 990.4,
-    "totalDeficit": 132.85
+    "totalDeficit": 132.85,
+    "perfectWeeks": 0
   },
   {
     "name": "Plaxico Burress",
@@ -33414,7 +33424,8 @@
     ],
     "totalActual": 1090.6,
     "totalOptimal": 1247,
-    "totalDeficit": 156.4
+    "totalDeficit": 156.4,
+    "perfectWeeks": 0
   },
   {
     "name": "Squid Joey",
@@ -36451,6 +36462,7 @@
     ],
     "totalActual": 941.75,
     "totalOptimal": 1110.4,
-    "totalDeficit": 168.65
+    "totalDeficit": 168.65,
+    "perfectWeeks": 0
   }
 ]

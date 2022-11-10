@@ -312,6 +312,7 @@ function populateTotals(teams) {
     let totalActual = 0;
     let totalOptimal = 0;
     let totalDeficit = 0;
+    let perfectWeeks = 0;
     let weeksWithData = teams[team].rawLineups.length;
     for (let i = 0; i < weeksWithData; i++){
 
@@ -324,12 +325,15 @@ function populateTotals(teams) {
       totalOptimal += weeklyOptimal
 
       let weeklyDeficit = weeklyOptimal - weeklyActual;
+      if (weeklyDeficit == 0) {
+        perfectWeeks++;
+      }
       totalDeficit += weeklyDeficit;
     }
-
     teams[team].totalActual = Math.round(totalActual * 100) / 100;
     teams[team].totalOptimal = Math.round(totalOptimal * 100) / 100;
     teams[team].totalDeficit = Math.round(totalDeficit * 100) / 100;
+    teams[team].perfectWeeks = perfectWeeks;
   }
 
   return teams;
