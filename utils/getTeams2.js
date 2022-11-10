@@ -33,16 +33,19 @@ export async function getTeams2(leagueId, seasonId) {
     // Team icons load last, so wait for icons to ensure the page is fully loaded
     await waitForIconsToLoad(driver);
 
-    // Get the 'weeklyMatchups' with data
+    // Get the 'weeklyMatchups' that have data
     let weeklyMatchups = await getWeeklyMatchups(driver);
-    
-    // ? console logging
-    for (let i = 0; i < weeklyMatchups.length; i++){
-      console.log('\n\n');
-      console.log(`Week ${i + 1}`);
+
+    // Get the 'boxScoreUrls'
+    let boxScoreUrls = getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId);
+    console.log(boxScoreUrls);
+    // // ? console logging
+    // for (let i = 0; i < weeklyMatchups.length; i++){
+    //   console.log('\n\n');
+    //   console.log(`Week ${i + 1}`);
       
-      console.log(weeklyMatchups[i]);
-    }
+    //   console.log(weeklyMatchups[i]);
+    // }
 
   } finally {
     await driver.quit();
@@ -139,4 +142,26 @@ async function getWeeklyMatchups(driver) {
   }
 
   return weeklyMatchups;
+}
+
+function getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId) {
+  
+  // Loop through 'weeklyMatchups'
+  let boxScoreUrls = [];
+  for (let iWeek = 0; iWeek < weeklyMatchups.length; iWeek++) {
+    
+    // Loop through each 'matchup' in the week
+    for (let iMatch = 0; iMatch < weeklyMatchups[iWeek].length; iMatch++) {
+      
+      // Get the homeTeam's id
+      let homeTeam = weeklyMatchups[iWeek][iMatch].homeTeam;
+      let homeTeamObj = teams.filter((team)=>team.name == homeTeam);
+      let homeId = homeTeamObj[0].id;
+
+      // Declare the matchup's 'boxScoreUrl'
+      let boxScoreUrl = `https://fantasy.espn.com/football/boxscore?leagueId=${leagueId}&matchupPeriodId=${iWeek}&scoringPeriodId=${iWeek}&seasonId=${seasonId}&teamId=${homeId}&view=scoringperiod`
+      boxScoreUrls.push(boxScoreUrl);
+    }
+  }
+  return boxScoreUrls;
 }
