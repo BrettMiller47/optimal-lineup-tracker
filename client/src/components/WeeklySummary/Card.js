@@ -1,53 +1,34 @@
 import React from 'react';
+import {Stack} from 'react-bootstrap'  
 
-export default function Card() {
+export default function Card(props) {
   
-  // ! Data needed for generating Card
-  
-
   const styles = {
     card: {
-      width: '18rem',
+      width: '19rem',
       boxShadow: '0px 0px 5px black',
-      margin: '2rem'
     },
     row: {
       width: '100%',
-    },
-    teamTotal: {
-      padding: '0',
-      margin: '0',
       display: 'flex',
       justifyContent: 'space-between',
-      padding: '3px'
-
-    },
-    playerInfo: {
-      padding: '0',
-      margin: '0',
-      display: 'flex',
-      justifyContent: 'space-between',
-      padding: '3px'
+      padding: '.4rem',
     },
   }
 
   return (
     <>
-      <div className='container' style={styles.card}>
-        <div className='row' style={styles.row}>
-          <h3 style={styles.teamTotal}>
-            <span>What's a king Tua God?</span>
-            <span>120.65</span>
-          </h3>
-        </div>
-        <div className='row' style={styles.row}>
-          <h4 style={styles.playerInfo}>
-            <span>QB</span>
-            <span>Lamar Jackson</span>
-            <span>23.25</span>
-          </h4>
-        </div>
-      </div>
+      <Stack style={styles.card}>
+        {/* Create a row for each player in team */}
+        {props.lineup.map((player) =>
+          <Stack direction='horizontal' style={styles.row}>
+            <h5>{player.SLOT}</h5>
+            <h5>{player.PLAYER}</h5>
+            <h5>{player.FPTS}</h5>
+          </Stack>
+        )
+        }
+      </Stack>
     </>
   );
 }
