@@ -26,7 +26,6 @@ export async function getTeams2(leagueId, seasonId) {
 
     // Get an array of 'teams' where team = {id: , name:}
     let teams = await getIdsAndNames(driver);
-    console.log(teams);
 
     // Navigate to the Schedule page
     await driver.get(`https://fantasy.espn.com/football/league/schedule?leagueId=${leagueId}`);
@@ -42,17 +41,10 @@ export async function getTeams2(leagueId, seasonId) {
 
     // Populate the blank 'rawLineups' arrays in 'teams'
     await populateRawLineups(driver, boxScoreUrls, teams);
-    
-    // // ? console logging
-    // for (let i = 0; i < weeklyMatchups.length; i++){
-    //   console.log('\n\n');
-    //   console.log(`Week ${i + 1}`);
-      
-    //   console.log(weeklyMatchups[i]);
-    // }
 
 
-    // return weeklyData;
+    return teams;
+
   } finally {
     await driver.quit();
   }
@@ -177,8 +169,7 @@ function getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId) {
 async function populateRawLineups(driver, boxScoreUrls, teams) {
 
   // Loop through the 'boxScoreUrls'
-  for (let iUrl = 0; iUrl < 2; iUrl++){
-    console.log(boxScoreUrls[iUrl]);
+  for (let iUrl = 0; iUrl < boxScoreUrls.length; iUrl++){
     await driver.get(boxScoreUrls[iUrl]);
 
     // Wait for the page to load
