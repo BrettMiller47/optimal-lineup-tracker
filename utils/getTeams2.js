@@ -26,6 +26,7 @@ export async function getTeams2(leagueId, seasonId) {
 
     // Get an array of 'teams' where team = {id: , name:}
     let teams = await getIdsAndNames(driver);
+    console.log(teams);
 
     // Navigate to the Schedule page
     await driver.get(`https://fantasy.espn.com/football/league/schedule?leagueId=${leagueId}`);
@@ -38,7 +39,10 @@ export async function getTeams2(leagueId, seasonId) {
 
     // Get the 'boxScoreUrls'
     let boxScoreUrls = getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId);
-    console.log(boxScoreUrls);
+
+    // Populate the blank 'rawLineups' arrays in 'teams'
+    await populateRawLineups(driver, boxScoreUrls, teams);
+    
     // // ? console logging
     // for (let i = 0; i < weeklyMatchups.length; i++){
     //   console.log('\n\n');
@@ -47,6 +51,8 @@ export async function getTeams2(leagueId, seasonId) {
     //   console.log(weeklyMatchups[i]);
     // }
 
+
+    // return weeklyData;
   } finally {
     await driver.quit();
   }
@@ -63,11 +69,13 @@ async function getIdsAndNames(driver) {
   for (let i = 0; i < nameEls.length; i++) {      
     let team = {};
 
-    // Decare the 'name' and 'id' for the 'team'
+    // Declare the 'name', 'id', and 'rawLineups' keys for the 'team'
     let name = await nameEls[i].getText().then((text) => Promise.resolve(text));
     let id = i + 1;
     team.name = name;
     team.id = id;
+    team.rawLineups = [];
+
     teams.push(team);
   }
 
@@ -159,9 +167,73 @@ function getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId) {
       let homeId = homeTeamObj[0].id;
 
       // Declare the matchup's 'boxScoreUrl'
-      let boxScoreUrl = `https://fantasy.espn.com/football/boxscore?leagueId=${leagueId}&matchupPeriodId=${iWeek}&scoringPeriodId=${iWeek}&seasonId=${seasonId}&teamId=${homeId}&view=scoringperiod`
+      let boxScoreUrl = `https://fantasy.espn.com/football/boxscore?leagueId=${leagueId}&matchupPeriodId=${iWeek+1}&scoringPeriodId=${iWeek+1}&seasonId=${seasonId}&teamId=${homeId}&view=scoringperiod`
       boxScoreUrls.push(boxScoreUrl);
     }
   }
   return boxScoreUrls;
+}
+
+async function populateRawLineups(driver, boxScoreUrls, teams) {
+
+  // Loop through the 'boxScoreUrls'
+  for (let iUrl = 0; iUrl < 2; iUrl++){
+    console.log(boxScoreUrls[iUrl]);
+    await driver.get(boxScoreUrls[iUrl]);
+
+    // Wait for the page to load
+    await driver.wait(until.elementLocated(By.className('AnchorLink link clr-link pointer')), 15000);
+
+    // Get the team names
+    let names = []
+    let nameEls = await driver.findElements(By.className('team-header'));
+    await nameEls[0].getText().then((text) => {
+      let headerText = text.split('\n');
+      names.push(headerText[0]);
+    });
+    await nameEls[1].getText().then((text) => {
+      let headerText = text.split('\n');
+      names.push(headerText[0]);
+    });
+
+    // Loop through each table (two tables, one for each team)
+    let tableEls = await driver.findElements(By.className('Table__TBODY'));
+    for (let iTable = 0; iTable < tableEls.length; iTable++){
+
+      // Loop through the table's players
+      let players = [];
+      let playerEls = await driver.findElements(By.className('Table__TR Table__TR--lg Table__odd'));
+      for (let iPlayers = 0; iPlayers < playerEls.length; iPlayers++){
+
+        // Get the 'player' from the playerEl
+        let player = {};
+        await playerEls[iPlayers].getText().then((text) => { 
+          let stats = text.split('\n');
+
+          // Ignore the 'TOTALS' row for each team
+          if (stats[0] != 'TOTALS') {
+            player.SLOT = stats[0];
+            player.PLAYER = stats[1];
+            player.TEAM = stats[2];
+            player.POS = stats[3];
+            player.OPP = stats[4];
+            player.STATUS = stats[5];
+            player.PROJ = stats[6];
+            player.FPTS = stats[7];
+
+            // Push 'player' to the team's 'players'
+            players.push(player)
+          }
+        });
+      }
+      
+      // Push 'players' to the appropriate team in 'teams'
+      let name = names[iTable];
+      teams.map((team) => {
+        if (team.name == name) {
+          team.rawLineups.push(players);
+        }
+      });
+    }
+  }
 }
