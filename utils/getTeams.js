@@ -1,5 +1,6 @@
 import { Builder, By, until } from 'selenium-webdriver';
 import 'chromedriver';
+import { getStartingLineup, getOptimalStartingLineup, getTotal } from './lineupOptimizer.js';
 
 function getActualNumTeams(num) {
   // If 'numTeams' >14, then
@@ -12,110 +13,45 @@ function getActualNumTeams(num) {
   }
 };
 
-export async function getTeams(leagueId, seasonId, weeksWithData) {
+export async function getTeams(leagueId, seasonId) {
   
   // Build the driver for navigating the url via Chrome
   let driver = await new Builder().forBrowser('chrome').build();
-  
+
   try {
-    // Navigate to the league standings
-    let leagueUrl = `https://fantasy.espn.com/football/league/standings?leagueId=${leagueId}`
-    await driver.get(leagueUrl);
+    // Navigate to the League Members page
+    await driver.get(`https://fantasy.espn.com/football/tools/leaguemembers?leagueId=${leagueId}`);
+    
+    // Team icons load last, so wait for icons to ensure the page is fully loaded
+    await waitForIconsToLoad(driver);
 
-    // Wait for the standings table to load, then get all teamIds
-    await driver.wait(until.elementLocated(
-      By.className('teamName truncate'))
-      , 15000
-    );
-    let teamEls = await driver.findElements(By.className('teamName truncate'));
+    // Get an array of 'teams' where team = {id: , name:}
+    let teams = await getIdsAndNames(driver);
 
-    // Handle/ignore rankings by division to get the 'actualNumTeams'
-    let fetchedNumTeams = teamEls.length;
-    let actualNumTeams = getActualNumTeams(teamEls.length);
+    // Navigate to the Schedule page
+    await driver.get(`https://fantasy.espn.com/football/league/schedule?leagueId=${leagueId}`);
 
-    // Loop through the 'actualNumTeams' to populate 'teams' with:
-    // -- teamId: INT
-    // -- name: STRING
-    // -- dataByWeek: []
-    let teams = [];
-    for (let iTeams = 0; iTeams < actualNumTeams; iTeams++) {
+    // Team icons load last, so wait for icons to ensure the page is fully loaded
+    await waitForIconsToLoad(driver);
 
-      // Navigate to the team's week 1 url
-      let id = iTeams + 1;
-      let teamUrl = `https://fantasy.espn.com/football/team?seasonId=${seasonId}&leagueId=${leagueId}&teamId=${id}&scoringPeriodId=1&statSplit=singleScoringPeriod`;
-      await driver.get(teamUrl);
-      
-      // Wait until the page has loaded, then get all team names
-      await driver.wait(until.elementLocated(
-        By.className('Table__sub-header Table__TR Table__even'))
-        , 15000
-      );
-      let teamEl = await driver.findElement(By.className('teamName truncate'));
-      let name = await teamEl.getText().then((text) => Promise.resolve(text));
+    // Get the 'weeklyMatchups' that have data
+    let weeklyMatchups = await getWeeklyMatchups(driver);
 
-      // Get the 'headers' for the weekly data table (only once)
-      if (iTeams == 0) {
+    // Get the 'boxScoreUrls'
+    let boxScoreUrls = getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId);
 
-        // Get the headers text as an array
-        let headerEls = await driver.findElement(By.className('Table__sub-header Table__TR Table__even'));
-        var headers = await headerEls.getText().then((text) =>
-          Promise.resolve(text.split('\n'))
-        );
+    // Populate the blank 'rawLineups' arrays in 'teams'
+    await populateRawLineups(driver, boxScoreUrls, teams);
 
-        // Issue: HEALTH @ playersData[2] (if player is not healthy) but not in headers
-        // Resolution: add 'HEALTH' as headers[2]
-        headers.splice(2, 0, "HEALTH");
-        
-        // Issue: TEAM @ playersData[2] || [3] (if HEALTH) but not in headers
-        // Resolution: Handle Issue: add 'TEAM' as headers[3]
-        headers.splice(3, 0, 'TEAM');
+    // Populate the blank 'actualLineups' arrays in 'teams'
+    await populateActualLineups(teams);
+    
+    // Populate the blank 'optimalLineups' arrays in 'teams'
+    await populateOptimalLineups(teams);
 
-        // Issue: POS @ playersData[3] (or [4] if HEALTH) but not in headers
-        // Resolution: Handle Issue 4: add 'POS' as headers[4]
-        headers.splice(4, 0, 'POS');
-      }
-
-      // Get the dataByWeek
-      let dataByWeek = [];
-      for (let week = 1; week < weeksWithData + 1; week++) {
-        
-        let weeklyDataIsEmpty = true;
-        while (weeklyDataIsEmpty) {
-          // Navigate to the team's weekly score (remember: the first iteration is already at the week 1 page)
-          if (week != 1) {
-            let weeklyScoreUrl = `https://fantasy.espn.com/football/team?seasonId=${seasonId}&leagueId=${leagueId}&teamId=${id}&scoringPeriodId=${week}&statSplit=singleScoringPeriod`
-            await driver.get(weeklyScoreUrl);
-          }
-          
-          // Wait until the page has loaded, then get all team names
-          await driver.wait(until.elementLocated(
-            By.className('game-status-inline flex'))
-            , 15000
-          );
-
-          // Get this week's 'weeklyData'
-          var weeklyData = await getWeeklyData(driver, headers); 
-
-          // Satisfy the while loop condition if the 'weeklyData' was collected
-          if (weeklyData.length != 0) {
-            weeklyDataIsEmpty = false;
-          }
-        };
-        
-        // Push the 'weeklyData' to 'dataByWeek'
-        dataByWeek.push(weeklyData);
-      }
-
-      // Push 'id', 'name', and 'dataByWeek' to 'teams'
-      teams.push(
-        {
-          id: id,
-          name: name,
-          dataByWeek: dataByWeek
-        }
-      );
-    }
-
+    // Update 'teams' to include totals
+    await populateTotals(teams);
+    
     return teams;
 
   } finally {
@@ -123,58 +59,278 @@ export async function getTeams(leagueId, seasonId, weeksWithData) {
   }
 };
 
-async function getWeeklyData(driver, headers) {
+// ----------------------------------
+// -------- HELPER FUNCTIONS --------
 
-  // -------- playersData[] -------- 
-  // Get all playerRowEls
-  let playerRowEls = await driver.findElements(By.className('Table__TR Table__TR--lg Table__odd'));
+async function getIdsAndNames(driver) {
+  let teams = [];
 
-  // For each playerRowEl get the player's stats and push to 'playersData'
-  let playersData = []
-  for (let i = 0; i < playerRowEls.length; i++) {
+  // Loop through each league member to declare their 'team', then push their 'team' to 'teams' 
+  let nameEls = await driver.findElements(By.className('teamName truncate'));
+  for (let i = 0; i < nameEls.length; i++) {      
+    let team = {};
 
-    // Loop through the data points in the playerRowEl
-    await playerRowEls[i].getText().then((text) => {
-      let stats = text.split('\n');
-      playersData.push(stats);
-    });
+    // Declare the 'name', 'id', and 'rawLineups' keys for the 'team'
+    let name = await nameEls[i].getText().then((text) => Promise.resolve(text));
+    let id = i + 1;
+    team.name = name;
+    team.id = id;
+    team.rawLineups = [];
+    team.actualLineups = [];
+    team.optimalLineups = [];
+  
+    teams.push(team);
   }
 
-  // Issue: team 'TOTALS' data included in playersData
-  // Resolution: Loop through playersData and remove 'TOTALS' data
-  for (let player in playersData) {
-    if (playersData[player][0] == 'TOTALS') {
-      playersData.splice(player, 1)
-    }
-  }
+  return teams;
+}
 
-  // Issue: Healthy players don't have 'HEALTH' status
-  // Resolution: if Healthy, add 'H' @ playersData[2]
-  for (let player in playersData) {
-    let healthStatuses = ['P', 'Q', 'D', 'O', 'IR', 'SSPD'];
-    let playerHealth = playersData[player][2];
-    let isHealthStatus = healthStatuses.includes(playerHealth);
-    if (!isHealthStatus) {
-      playersData[player].splice(2, 0, 'H');
-    }
+async function waitForIconsToLoad(driver) {
+  let teamIconClass = 'Image team-logo w-100';
+  let customTeamIconClass = 'Image team-logo w-100';
+  try {
+    // Find a standard icon
+    await driver.wait(until.elementLocated(By.className(teamIconClass)), 15000);
+  } catch {
+    // Find a custom icon
+    await driver.wait(until.elementLocated(By.className(customTeamIconClass)), 15000);
   }
+}
 
-  // --------- weeklyData[] ---------
-  let weeklyData = [];
-  // For each player...
-  for (let iPlayers in playersData) {
+function getMatchupDetails(arr) {
+
+  // arr = [homeTeam, homeRecord, homeManager, homeScore, awayScore, awayManager, awayTeam, awayRecord]
+  // If (homeScore == 0 && awayScore == 0), then this matchup is yet to be played
+  if (arr[3] == 0 && arr[4] == 0) {
+    return -1;
+  } else if (arr.length != 8) {
+    return -2;
+  } else {
     
-    // Create a 'player' object with {statDesc: stat}
-    let cols = headers;
-    let rows = playersData[iPlayers];
-    let player = {};
-    for (let i = 0; i < cols.length; i++) {
-      player[cols[i]] = rows[i];
+    // Return an array = [homeTeam, homeScore, awayTeam, awayScore]
+    let matchupDetails = {
+      homeTeam: arr[0],
+      homeScore: arr[3],
+      awayTeam: arr[6],
+      awayScore: arr[4]
+    };
+    return matchupDetails;
+  }
+}
+
+async function getWeeklyMatchups(driver) {
+  
+  // Get the matchup tables for the weeks with data
+  let regTables = await driver.findElements(By.className('ResponsiveTable'));
+  
+  // Loop through each week's table...
+  let weeklyMatchups = [];
+  for (let iTable = 0; iTable < regTables.length; iTable++){
+    
+    // Loop through each matchupEl in the table to populate 'matchupsInWeek'
+    let matchupsInWeek = []
+    let matchupEls = await regTables[iTable].findElements(By.className('Table__TR Table__TR--md Table__odd'));
+    for (let iMatch = 0; iMatch < matchupEls.length; iMatch++){
+
+      // Get the matchup's 'detailsArr' from the matchupEl
+      await matchupEls[iMatch].getText().then((text) => {
+        let detailsArr = text.split('\n');
+
+        // Use a helper function to return a 'matchup' object given the 'detailsArr'
+        let matchup = getMatchupDetails(detailsArr);
+
+        // If 'matchup' is not an error code due to lack of score data...
+        if (matchup != -1 && matchup != -2) {
+          matchupsInWeek.push(matchup);
+        }
+      });
     }
 
-    // Add the 'player' to 'weeklyData'
-    weeklyData.push(player);
+    // If 'matchupsInWeek' contains data (i.e this week has score data), then push to 'weeklyMatchups'
+    if (0 < matchupsInWeek.length) {
+      weeklyMatchups.push(matchupsInWeek);      
+    }
   }
 
-  return weeklyData;
+  return weeklyMatchups;
+}
+
+function getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId) {
+  
+  // Loop through 'weeklyMatchups'
+  let boxScoreUrls = [];
+  for (let iWeek = 0; iWeek < weeklyMatchups.length; iWeek++) {
+    
+    // Loop through each 'matchup' in the week
+    for (let iMatch = 0; iMatch < weeklyMatchups[iWeek].length; iMatch++) {
+      
+      // Get the homeTeam's id
+      let homeTeam = weeklyMatchups[iWeek][iMatch].homeTeam;
+      let homeTeamObj = teams.filter((team)=>team.name == homeTeam);
+      let homeId = homeTeamObj[0].id;
+
+      // Declare the matchup's 'boxScoreUrl'
+      let boxScoreUrl = `https://fantasy.espn.com/football/boxscore?leagueId=${leagueId}&matchupPeriodId=${iWeek+1}&scoringPeriodId=${iWeek+1}&seasonId=${seasonId}&teamId=${homeId}&view=scoringperiod`
+      boxScoreUrls.push(boxScoreUrl);
+    }
+  }
+  return boxScoreUrls;
+}
+
+async function populateRawLineups(driver, boxScoreUrls, teams) {
+
+  // Loop through the 'boxScoreUrls'
+  for (let iUrl = 0; iUrl < boxScoreUrls.length; iUrl++){
+    await driver.get(boxScoreUrls[iUrl]);
+
+    // Wait for the page to load
+    await driver.wait(until.elementLocated(By.className('AnchorLink link clr-link pointer')), 15000);
+
+    // Get the team names
+    let names = []
+    let nameEls = await driver.findElements(By.className('team-header'));
+    await nameEls[0].getText().then((text) => {
+      let headerText = text.split('\n');
+      names.push(headerText[0]);
+    });
+    await nameEls[1].getText().then((text) => {
+      let headerText = text.split('\n');
+      names.push(headerText[0]);
+    });
+
+    // Loop through each table (two tables, one for each team)
+    let tableEls = await driver.findElements(By.className('Table__TBODY'));
+    for (let iTable = 0; iTable < tableEls.length; iTable++){
+
+      // Loop through the table's players
+      let players = [];
+      let playerEls = await tableEls[iTable].findElements(By.className('Table__TR Table__TR--lg Table__odd'));
+      for (let iPlayers = 0; iPlayers < playerEls.length; iPlayers++){
+
+        // Get the 'player' from the playerEl
+        let player = {};
+        await playerEls[iPlayers].getText().then((text) => { 
+          let stats = text.split('\n');
+
+          // Ignore the 'TOTALS' row for each team
+          if (stats[0] != 'TOTALS') {
+
+            // Identify conditions that require handling
+            let isEmptyPlayer = (stats[1] == 'Empty');
+            let isFreeAgent = (stats[2] == 'FA');
+            let isPlayerWithAllData = (!isEmptyPlayer && !isFreeAgent);
+            
+            // Populate the 'player' details
+            if (isPlayerWithAllData) {
+              player.SLOT = stats[0];
+              player.PLAYER = stats[1];
+              player.TEAM = stats[2];
+              player.POS = stats[3];
+              player.OPP = stats[4];
+              player.STATUS = stats[5];
+              player.PROJ = stats[6];
+              player.FPTS = stats[7];
+            } else if (isEmptyPlayer) {
+              player.SLOT = stats[0];
+              player.PLAYER = 'Empty';
+              player.TEAM = '--';
+              player.POS = '--';
+              player.OPP = '--';
+              player.STATUS = '--';
+              player.PROJ = 0;
+              player.FPTS = 0;
+            } else if (isFreeAgent) {
+              player.SLOT = stats[0];
+              player.PLAYER = stats[1];
+              player.TEAM = stats[2];
+              player.POS = stats[3];
+              player.OPP = stats[4];
+              player.STATUS = '--';
+              player.PROJ = stats[5];
+              player.FPTS = stats[6];
+            }
+
+            // Push 'player' to the team's 'players'
+            players.push(player)
+          }
+        });
+      }
+      
+      // Push 'players' to the appropriate team in 'teams'
+      let name = names[iTable];
+      teams.map((team) => {
+        if (team.name == name) {
+          team.rawLineups.push(players);
+        }
+      });
+    }
+  }
+}
+
+function populateActualLineups(teams) {
+  
+  // Loop through 'teams'
+  for (let team in teams) {
+    
+    // Loop through the team's 'rawLineups'
+    let actualLineups = [];
+    for (let i = 0; i < teams[team].rawLineups.length; i++){
+
+      // Get the actualLineup
+      let rawLineup = teams[team].rawLineups[i];
+      let actualLineup = getStartingLineup(rawLineup);
+      
+      // Push the 'actualLineup' to 'teams'
+      teams[team].actualLineups.push(actualLineup)
+    }
+  }
+}
+
+function populateOptimalLineups(teams) {
+  
+  // Loop through 'teams'
+  for (let team in teams) {
+
+    // Loop through the team's 'rawLineups'
+    let optimalLineups = [];
+    for (let i = 0; i < teams[team].rawLineups.length; i++){
+
+      // Get the optimalLineup
+      let rawLineup = teams[team].rawLineups[i];
+      let optimalLineup = getOptimalStartingLineup(rawLineup);      
+      
+      // Push the 'optimalLineup' to 'teams'
+      teams[team].optimalLineups.push(optimalLineup)
+    }
+  }
+}
+
+function populateTotals(teams) {
+  
+  for (let team in teams) {
+    
+    let totalActual = 0;
+    let totalOptimal = 0;
+    let totalDeficit = 0;
+    let weeksWithData = teams[team].rawLineups.length;
+    for (let i = 0; i < weeksWithData; i++){
+
+      let actualStarters = teams[team].actualLineups[i];
+      let weeklyActual = Math.round(getTotal(actualStarters) * 100) / 100;
+      totalActual += weeklyActual;
+      
+      let optimalStarters = teams[team].optimalLineups[i];
+      let weeklyOptimal = Math.round(getTotal(optimalStarters) * 100) / 100;
+      totalOptimal += weeklyOptimal
+
+      let weeklyDeficit = weeklyOptimal - weeklyActual;
+      totalDeficit += weeklyDeficit;
+    }
+
+    teams[team].totalActual = Math.round(totalActual * 100) / 100;
+    teams[team].totalOptimal = Math.round(totalOptimal * 100) / 100;
+    teams[team].totalDeficit = Math.round(totalDeficit * 100) / 100;
+  }
+
+  return teams;
 }

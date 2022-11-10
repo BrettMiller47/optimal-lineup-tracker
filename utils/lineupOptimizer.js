@@ -34,15 +34,15 @@ function isEligibleK(player) {
   return position == 'K';
 }
 
-// -------- GET HIGHEST SCORER @ POSITION --------
+// -------- GET HIGHEST FPTS @ POSITION --------
 function getHighestScoringQB(players) {
   let eligiblePlayers = [];
   
   // Assemble the array of eligible players at the position
   for (let i in players) {
     let player = players[i];
-    if (player.SCORE == '--') {
-      player.SCORE = 0.0;
+    if (player.FPTS == '--') {
+      player.FPTS = 0.0;
     }
     if (isEligibleQB(player)) {
       eligiblePlayers.push(player)
@@ -50,7 +50,7 @@ function getHighestScoringQB(players) {
   }
 
   let sorted = eligiblePlayers.sort(function (a, b) {
-    return a.SCORE - b.SCORE;
+    return a.FPTS - b.FPTS;
   }).reverse();
 
   // Return the highest scoring player
@@ -63,8 +63,8 @@ function getHighestScoringRB(players) {
   // Assemble the array of eligible players at the position
   for (let i in players) {
     let player = players[i];
-    if (player.SCORE == '--') {
-      player.SCORE = 0.0;
+    if (player.FPTS == '--') {
+      player.FPTS = 0.0;
     }
     if (isEligibleRB(player)) {
       eligiblePlayers.push(player)
@@ -72,7 +72,7 @@ function getHighestScoringRB(players) {
   }
 
   let sorted = eligiblePlayers.sort(function (a, b) {
-    return a.SCORE - b.SCORE;
+    return a.FPTS - b.FPTS;
   }).reverse();
 
   // Return the highest scoring player
@@ -85,8 +85,8 @@ function getHighestScoringWR(players) {
   // Assemble the array of eligible players at the position
   for (let i in players) {
     let player = players[i];
-    if (player.SCORE == '--') {
-      player.SCORE = 0.0;
+    if (player.FPTS == '--') {
+      player.FPTS = 0.0;
     }
     if (isEligibleWR(player)) {
       eligiblePlayers.push(player)
@@ -94,7 +94,7 @@ function getHighestScoringWR(players) {
   }
 
   let sorted = eligiblePlayers.sort(function (a, b) {
-    return a.SCORE - b.SCORE;
+    return a.FPTS - b.FPTS;
   }).reverse();
 
   // Return the highest scoring player
@@ -107,8 +107,8 @@ function getHighestScoringTE(players) {
   // Assemble the array of eligible players at the position
   for (let i in players) {
     let player = players[i];
-    if (player.SCORE == '--') {
-      player.SCORE = 0.0;
+    if (player.FPTS == '--') {
+      player.FPTS = 0.0;
     }
     if (isEligibleTE(player)) {
       eligiblePlayers.push(player)
@@ -116,7 +116,7 @@ function getHighestScoringTE(players) {
   }
 
   let sorted = eligiblePlayers.sort(function (a, b) {
-    return a.SCORE - b.SCORE;
+    return a.FPTS - b.FPTS;
   }).reverse();
 
   // Return the highest scoring player
@@ -129,8 +129,8 @@ function getHighestScoringFLEX(players) {
   // Assemble the array of eligible players at the position
   for (let i in players) {
     let player = players[i];
-    if (player.SCORE == '--') {
-      player.SCORE = 0.0;
+    if (player.FPTS == '--') {
+      player.FPTS = 0.0;
     }
     if (isEligibleFLEX(player)) {
       eligiblePlayers.push(player)
@@ -138,7 +138,7 @@ function getHighestScoringFLEX(players) {
   }
 
   let sorted = eligiblePlayers.sort(function (a, b) {
-    return a.SCORE - b.SCORE;
+    return a.FPTS - b.FPTS;
   }).reverse();
 
   // Return the highest scoring player
@@ -151,8 +151,8 @@ function getHighestScoringD(players) {
   // Assemble the array of eligible players at the position
   for (let i in players) {
     let player = players[i];
-    if (player.SCORE == '--') {
-      player.SCORE = 0.0;
+    if (player.FPTS == '--') {
+      player.FPTS = 0.0;
     }
     if (isEligibleD(player)) {
       eligiblePlayers.push(player)
@@ -160,7 +160,7 @@ function getHighestScoringD(players) {
   }
 
   let sorted = eligiblePlayers.sort(function (a, b) {
-    return a.SCORE - b.SCORE;
+    return a.FPTS - b.FPTS;
   }).reverse();
 
   // Return the highest scoring player
@@ -173,8 +173,8 @@ function getHighestScoringK(players) {
   // Assemble the array of eligible players at the position
   for (let i in players) {
     let player = players[i];
-    if (player.SCORE == '--') {
-      player.SCORE = 0.0;
+    if (player.FPTS == '--') {
+      player.FPTS = 0.0;
     }
     if (isEligibleK(player)) {
       eligiblePlayers.push(player)
@@ -182,7 +182,7 @@ function getHighestScoringK(players) {
   }
 
   let sorted = eligiblePlayers.sort(function (a, b) {
-    return a.SCORE - b.SCORE;
+    return a.FPTS - b.FPTS;
   }).reverse();
 
   // Return the highest scoring player
@@ -206,10 +206,10 @@ export function getTotal(startingLineup) {
   
   let total = 0.00;
   for (let player in startingLineup) {
-    let score = parseFloat(startingLineup[player].SCORE);
-    let scoreDecimals = Math.round(score * 100)/100;
-    total += scoreDecimals; 
-    console.log(`${startingLineup[player].PLAYER} scored ${scoreDecimals} = ${total}`)
+
+    let FPTS = parseFloat(startingLineup[player].FPTS);
+    let FPTSDecimals = Math.round(FPTS * 100)/100;
+    total += FPTSDecimals; 
   }
   return total;
 }
@@ -218,8 +218,9 @@ export function getStartingLineup(rawLineup) {
   
   let startingLineup = [];
   for (let player in rawLineup) {
-    let notOnBench = rawLineup[player].SLOT != 'Bench'; 
-    if (notOnBench) {
+
+    let notOnBenchOrIr = (rawLineup[player].SLOT != 'Bench' && rawLineup[player].SLOT != 'IR'); 
+    if (notOnBenchOrIr) {
       startingLineup.push(rawLineup[player]);
     }
   }
@@ -232,7 +233,7 @@ export function getOptimalStartingLineup(rawLineup) {
   let startingSlots = getStartingSlots(rawLineup);
   let optimalStartingLineup = [];
 
-  // Fill the starting slots with the highest scorer at the position (fill FLEX last)
+  // Fill the starting slots with the highest FPTSr at the position (fill FLEX last)
   for (let slot in startingSlots) {
     let position = startingSlots[slot];
     
