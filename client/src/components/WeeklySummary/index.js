@@ -394,9 +394,20 @@ export default function WeeklySummary() {
   ]
 
   const styles = {
-    row: {
+    stack: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifySelf: 'center'
+    },
+    summaryRow: {
       margin: '1rem',
       alignItems: 'flex-start',
+      display: 'flex',
+      flexWrap: 'wrap'
+    },
+    cardsRow: {
+      display: 'flex',
+      flexDirection: 'column'
     },
     divider: {
       borderBottom: '3px solid black',
@@ -409,15 +420,15 @@ export default function WeeklySummary() {
   }
 
   return (
-    <Container>
+    <>
       {/* Create a row for each team */}
       {teamsThisWeek.map((team, i)=>
-        <Stack key={i}>
-          <Row className='d-flex justify-content-center'>
+        <Stack key={i} style={styles.stack}>
+          <Row className='d-flex justify-content-center '>
             <Col xs={9} style={styles.divider}>
             </Col>
           </Row>
-          <Row style={styles.row}>
+          <Row style={styles.summaryRow}>
             <Col xs={4}>
               <TeamSummary
                 name={team.name}
@@ -426,15 +437,15 @@ export default function WeeklySummary() {
                 deficit={team.deficit}
               />
             </Col>
-            <Col xs={4} style={styles.col}>
-              <Card lineup={team.actualLineup} />
-            </Col>
-            <Col xs={4}>
-              <Card lineup={team.optimalLineup} />
+            <Col xs={8} style={styles.col}>
+              <Row style={styles.cardsRow}>
+                <Card lineup={team.actualLineup} />
+                <Card lineup={team.actualLineup} />
+              </Row>
             </Col>
           </Row>
         </Stack>
       )}
-    </Container>
+    </>
   );
 }

@@ -5,7 +5,7 @@ export default function Card(props) {
   
   const styles = {
     card: {
-      width: '19rem',
+      width: '25rem',
       boxShadow: '0px 0px 5px black',
     },
     row: {
