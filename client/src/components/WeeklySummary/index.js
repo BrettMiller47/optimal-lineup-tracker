@@ -411,8 +411,8 @@ export default function WeeklySummary() {
   return (
     <Container>
       {/* Create a row for each team */}
-      {teamsThisWeek.map((team)=>
-        <Stack>
+      {teamsThisWeek.map((team, i)=>
+        <Stack key={i}>
           <Row className='d-flex justify-content-center'>
             <Col xs={9} style={styles.divider}>
             </Col>

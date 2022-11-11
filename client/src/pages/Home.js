@@ -4,7 +4,6 @@ import WeeklySummary from '../components/WeeklySummary/index';
 
 export default function Home() {
   
-
   return (
     <>
       <SeasonSummary />

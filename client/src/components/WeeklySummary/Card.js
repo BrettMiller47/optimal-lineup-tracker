@@ -20,8 +20,8 @@ export default function Card(props) {
     <>
       <Stack style={styles.card}>
         {/* Create a row for each player in team */}
-        {props.lineup.map((player) =>
-          <Stack direction='horizontal' style={styles.row}>
+        {props.lineup.map((player, i) =>
+          <Stack direction='horizontal' style={styles.row} key={i}>
             <h5>{player.SLOT}</h5>
             <h5>{player.PLAYER}</h5>
             <h5>{player.FPTS}</h5>
