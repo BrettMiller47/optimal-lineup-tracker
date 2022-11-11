@@ -1,6 +1,7 @@
 {
-  "name": "FFS! Fantasy Football Slouch",
+  "name": "start-sit-deficit",
   "author": "Brett D. Miller",
+  "description": "A tool for viewing the best Start/Sit managers in an ESPN fantasy football league.",
   "dependencies": {
     "chromedriver": "^106.0.1",
     "dotenv": "^16.0.3",
@@ -8,6 +9,13 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "develop": "concurrently \"cd server && npm run watch\" \"cd client && npm start\"",
+    "install": "cd server && npm i && cd ../client && npm i",
+    "seed": "cd server && npm run seed",
+    "build": "cd client && npm run build",
+    "scrape": "node index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^5.1.0"
   }
 }

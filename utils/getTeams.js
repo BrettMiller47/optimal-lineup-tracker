@@ -312,7 +312,7 @@ function populateTotals(teams) {
     let totalActual = 0;
     let totalOptimal = 0;
     let totalDeficit = 0;
-    let perfectWeeks = 0;
+    let perfectWeeks = '';
     let weeksWithData = teams[team].rawLineups.length;
     for (let i = 0; i < weeksWithData; i++){
 
@@ -326,7 +326,7 @@ function populateTotals(teams) {
 
       let weeklyDeficit = weeklyOptimal - weeklyActual;
       if (weeklyDeficit == 0) {
-        perfectWeeks++;
+        perfectWeeks += 'star';
       }
       totalDeficit += weeklyDeficit;
     }

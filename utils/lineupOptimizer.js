@@ -245,42 +245,49 @@ export function getOptimalStartingLineup(rawLineup) {
     switch (position) {
       case 'QB':
         player = getHighestScoringQB(rawLineup);
+        player.SLOT = 'QB';
         optimalStartingLineup.push(player);
         rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'RB':
         player = getHighestScoringRB(rawLineup);
+        player.SLOT = 'RB';
         optimalStartingLineup.push(player);
         rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'WR':
         player = getHighestScoringWR(rawLineup);
+        player.SLOT = 'WR';
         optimalStartingLineup.push(player);
         rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'TE':
         player = getHighestScoringTE(rawLineup);
+        player.SLOT = 'TE';
         optimalStartingLineup.push(player);
         rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'D/ST':
         player = getHighestScoringD(rawLineup);
+        player.SLOT = 'D/ST';
         optimalStartingLineup.push(player);
         rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'K':
         player = getHighestScoringK(rawLineup);
+        player.SLOT = 'K';
         optimalStartingLineup.push(player);
         rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'FLEX':
         player = getHighestScoringFLEX(rawLineup);
+        player.SLOT = 'FLEX';
         optimalStartingLineup.push(player);
         rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
