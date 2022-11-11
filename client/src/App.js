@@ -1,12 +1,12 @@
 import './App.css';
 import Home from './pages/Home';
-import { Container } from 'react-bootstrap';
+import LeagueSummary from './pages/LeagueSummary';
 
 function App() {
 
   return (
     <>
-      <Home />
+      <LeagueSummary />
     </>
   );
 }
