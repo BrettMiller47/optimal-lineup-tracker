@@ -1,0 +1,20 @@
+[
+  {
+    "week": 1,
+    "players": [],
+    "actualPlayers": [],
+    "actualFPTS": 99.2,
+    "optimalPlayers": [],
+    "optimalFPTS": 121.4,
+    "deficit": -22.2
+  },
+  {
+    "week": 1,
+    "players": [],
+    "actualPlayers": [],
+    "actualFPTS": 124.65,
+    "optimalPlayers": [],
+    "optimalFPTS": 136.65,
+    "deficit": -12
+  }
+]

@@ -1,5 +1,5 @@
 {
-  "name": "mern-server",
+  "name": "start-sit-deficit",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -9,7 +9,7 @@
     "seed": "node seeders/seed.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Brett Miller",
   "license": "ISC",
   "dependencies": {
     "apollo-server-express": "^3.6.2",

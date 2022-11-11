@@ -1,0 +1,302 @@
+[
+  {
+    "SLOT": "QB",
+    "PLAYER": "Kyler Murray",
+    "TEAM": "Ari",
+    "POS": "QB",
+    "OPP": "KC",
+    "STATUS": "L 21-44",
+    "PROJ": "24.9",
+    "FPTS": "24.55"
+  },
+  {
+    "SLOT": "RB",
+    "PLAYER": "James Conner",
+    "TEAM": "Ari",
+    "POS": "RB",
+    "OPP": "KC",
+    "STATUS": "L 21-44",
+    "PROJ": "15.4",
+    "FPTS": "14.0"
+  },
+  {
+    "SLOT": "RB",
+    "PLAYER": "Dameon Pierce",
+    "TEAM": "Hou",
+    "POS": "RB",
+    "OPP": "Ind",
+    "STATUS": "T 20-20",
+    "PROJ": "10.0",
+    "FPTS": "4.4"
+  },
+  {
+    "SLOT": "WR",
+    "PLAYER": "Ja'Marr Chase",
+    "TEAM": "Cin",
+    "POS": "WR",
+    "OPP": "Pit",
+    "STATUS": "L 20-23",
+    "PROJ": "14.4",
+    "FPTS": "23.9"
+  },
+  {
+    "SLOT": "WR",
+    "PLAYER": "Michael Pittman Jr.",
+    "TEAM": "Ind",
+    "POS": "WR",
+    "OPP": "@Hou",
+    "STATUS": "T 20-20",
+    "PROJ": "12.2",
+    "FPTS": "22.6"
+  },
+  {
+    "SLOT": "TE",
+    "PLAYER": "Dallas Goedert",
+    "TEAM": "Phi",
+    "POS": "TE",
+    "OPP": "@Det",
+    "STATUS": "W 38-35",
+    "PROJ": "8.2",
+    "FPTS": "7.5"
+  },
+  {
+    "SLOT": "FLEX",
+    "PLAYER": "Rashaad Penny",
+    "TEAM": "Sea",
+    "POS": "RB",
+    "OPP": "Den",
+    "STATUS": "W 17-16",
+    "PROJ": "12.3",
+    "FPTS": "7.7"
+  },
+  {
+    "SLOT": "D/ST",
+    "PLAYER": "Eagles D/ST",
+    "TEAM": "Phi",
+    "POS": "D/ST",
+    "OPP": "@Det",
+    "STATUS": "W 38-35",
+    "PROJ": "9.4",
+    "FPTS": "7.0"
+  },
+  {
+    "SLOT": "K",
+    "PLAYER": "Greg Joseph",
+    "TEAM": "Min",
+    "POS": "K",
+    "OPP": "GB",
+    "STATUS": "W 23-7",
+    "PROJ": "8.0",
+    "FPTS": "13.0"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Amon-Ra St. Brown",
+    "TEAM": "Det",
+    "POS": "WR",
+    "OPP": "Phi",
+    "STATUS": "L 35-38",
+    "PROJ": "10.6",
+    "FPTS": "16.4"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Skyy Moore",
+    "TEAM": "KC",
+    "POS": "WR",
+    "OPP": "@Ari",
+    "STATUS": "W 44-21",
+    "PROJ": "4.5",
+    "FPTS": "3.5"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "James Cook",
+    "TEAM": "Buf",
+    "POS": "RB",
+    "OPP": "@LAR",
+    "STATUS": "W 31-10",
+    "PROJ": "5.2",
+    "FPTS": "-1.8"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Treylon Burks",
+    "TEAM": "Ten",
+    "POS": "WR",
+    "OPP": "NYG",
+    "STATUS": "L 20-21",
+    "PROJ": "6.7",
+    "FPTS": "7.0"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "George Pickens",
+    "TEAM": "Pit",
+    "POS": "WR",
+    "OPP": "@Cin",
+    "STATUS": "W 23-20",
+    "PROJ": "6.9",
+    "FPTS": "0.8"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Eno Benjamin",
+    "TEAM": "Ari",
+    "POS": "RB",
+    "OPP": "KC",
+    "STATUS": "L 21-44",
+    "PROJ": "2.7",
+    "FPTS": "7.6"
+  },
+  {
+    "SLOT": "QB",
+    "PLAYER": "Tom Brady",
+    "TEAM": "TB",
+    "POS": "QB",
+    "OPP": "@Dal",
+    "STATUS": "W 19-3",
+    "PROJ": "24.1",
+    "FPTS": "13.5"
+  },
+  {
+    "SLOT": "RB",
+    "PLAYER": "Ezekiel Elliott",
+    "TEAM": "Dal",
+    "POS": "RB",
+    "OPP": "TB",
+    "STATUS": "L 3-19",
+    "PROJ": "11.9",
+    "FPTS": "5.4"
+  },
+  {
+    "SLOT": "RB",
+    "PLAYER": "Clyde Edwards-Helaire",
+    "TEAM": "KC",
+    "POS": "RB",
+    "OPP": "@Ari",
+    "STATUS": "W 44-21",
+    "PROJ": "10.5",
+    "FPTS": "20.9"
+  },
+  {
+    "SLOT": "WR",
+    "PLAYER": "Cooper Kupp",
+    "TEAM": "LAR",
+    "POS": "WR",
+    "OPP": "Buf",
+    "STATUS": "L 10-31",
+    "PROJ": "16.0",
+    "FPTS": "25.3"
+  },
+  {
+    "SLOT": "WR",
+    "PLAYER": "Mike Williams",
+    "TEAM": "LAC",
+    "POS": "WR",
+    "OPP": "LV",
+    "STATUS": "W 24-19",
+    "PROJ": "11.8",
+    "FPTS": "2.0"
+  },
+  {
+    "SLOT": "TE",
+    "PLAYER": "Mark Andrews",
+    "TEAM": "Bal",
+    "POS": "TE",
+    "OPP": "@NYJ",
+    "STATUS": "W 24-9",
+    "PROJ": "12.0",
+    "FPTS": "7.7"
+  },
+  {
+    "SLOT": "FLEX",
+    "PLAYER": "Elijah Moore",
+    "TEAM": "NYJ",
+    "POS": "WR",
+    "OPP": "Bal",
+    "STATUS": "L 9-24",
+    "PROJ": "10.6",
+    "FPTS": "7.4"
+  },
+  {
+    "SLOT": "D/ST",
+    "PLAYER": "Browns D/ST",
+    "TEAM": "Cle",
+    "POS": "D/ST",
+    "OPP": "@Car",
+    "STATUS": "W 26-24",
+    "PROJ": "10.6",
+    "FPTS": "8.0"
+  },
+  {
+    "SLOT": "K",
+    "PLAYER": "Harrison Butker",
+    "TEAM": "KC",
+    "POS": "K",
+    "OPP": "@Ari",
+    "STATUS": "W 44-21",
+    "PROJ": "8.3",
+    "FPTS": "9.0"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Damien Harris",
+    "TEAM": "NE",
+    "POS": "RB",
+    "OPP": "@Mia",
+    "STATUS": "L 7-20",
+    "PROJ": "10.3",
+    "FPTS": "6.8"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Melvin Gordon III",
+    "TEAM": "Den",
+    "POS": "RB",
+    "OPP": "@Sea",
+    "STATUS": "L 16-17",
+    "PROJ": "8.3",
+    "FPTS": "6.2"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Bills D/ST",
+    "TEAM": "Buf",
+    "POS": "D/ST",
+    "OPP": "@LAR",
+    "STATUS": "W 31-10",
+    "PROJ": "8.4",
+    "FPTS": "20.0"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Jerick McKinnon",
+    "TEAM": "KC",
+    "POS": "RB",
+    "OPP": "@Ari",
+    "STATUS": "W 44-21",
+    "PROJ": "4.9",
+    "FPTS": "6.4"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Jalen Tolbert",
+    "TEAM": "Dal",
+    "POS": "WR",
+    "OPP": "TB",
+    "STATUS": "L 3-19",
+    "PROJ": "3.8",
+    "FPTS": "0.0"
+  },
+  {
+    "SLOT": "Bench",
+    "PLAYER": "Khalil Herbert",
+    "TEAM": "Chi",
+    "POS": "RB",
+    "OPP": "SF",
+    "STATUS": "W 19-10",
+    "PROJ": "5.6",
+    "FPTS": "10.8"
+  }
+]

@@ -10,6 +10,12 @@ const teamSchema = new Schema({
     required: true,
     unique: true,
   },
+  lineups: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Lineup'
+    }
+  ],
   totalActual: {
     type: Number,
     required: true,
