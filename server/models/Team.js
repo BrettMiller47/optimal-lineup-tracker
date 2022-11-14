@@ -28,12 +28,10 @@ const teamSchema = new Schema({
     type: Number,
     required: true,
   },
-  perfectWeeks: [
-    {
-      type: String,
-      required: true,
-    }
-  ]
+  perfectWeeks: {
+    type: String,
+    required: true,
+  }
 });
 
 const Team = model('Team', teamSchema);

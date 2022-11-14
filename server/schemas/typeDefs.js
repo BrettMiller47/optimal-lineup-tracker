@@ -1,23 +1,59 @@
 const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
+  type Player {
+    _id: ID
+    SLOT: String
+    PLAYER: String
+    TEAM: String
+    POS: String
+    OPP: String
+    STATUS: String
+    PROJ: String
+    FPTS: String
+  }
+
+  type Lineup {
+    week: Int
+    players: [Player]
+    actualFPTS: Float
+    optimalPlayers: [Player]
+    optimalFPTS: Float
+    deficit: Float
+  }
+
   type Team {
     name: String
     id: Int
+    lineups: [Lineup]
     totalActual: Float
     totalOptimal: Float
     totalDeficit: Float
-    perfectWeeks: Int
+    perfectWeeks: String
+  }
+
+  type League {
+    id: Int
+    teams: [Team]
   }
 
   type Query {
+    players: [Player]!
+    player(id: ID!): Player
+    lineups: [Lineup]!
     teams: [Team]!
-    team(name: String!): Team
-  }
-
-  type Mutation {
-    addTeam(name: String!, id: Int!, totalActual: Float!, totalOptimal: Float!, totalDeficit: Float!, perfectWeeks: Int!): Team
+    leagues: [League]!
   }
 `;
 
 module.exports = typeDefs;
+
+// type Team {
+//   name: String
+//   id: Int
+//   lineups: [Lineup]
+//   totalActual: Float
+//   totalOptimal: Float
+//   totalDeficit: Float
+//   perfectWeeks: String
+// }
