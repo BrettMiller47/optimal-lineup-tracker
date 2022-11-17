@@ -7,7 +7,7 @@ const leagueId = 84532749;
 let teams = await getTeams(leagueId, seasonId);
 
 // Step 2) Sort 'teamsTotal' by 'totalDeficit'
-let sorted = teams.sort((a, b) => (a.totalDeficit > b.totalDeficit) ? 1 : -1);
+let sorted = teams.sort((a, b) => (a.totalDeficit < b.totalDeficit) ? 1 : -1);
 
 // Step 3) Write the sorted teams to JSON format
 let data = JSON.stringify(sorted, null, 2);

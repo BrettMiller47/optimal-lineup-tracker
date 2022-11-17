@@ -13,7 +13,7 @@
     "install": "cd server && npm i && cd ../client && npm i",
     "seed": "cd server && npm run seed",
     "build": "cd client && npm run build",
-    "scrape": "node index.js"
+    "scrape": "node scrape.js"
   },
   "devDependencies": {
     "concurrently": "^5.1.0"

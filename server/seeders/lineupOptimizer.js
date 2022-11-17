@@ -111,7 +111,7 @@ function getHighestScoringTE(players) {
       player.FPTS = 0.0;
     }
     if (isEligibleTE(player)) {
-      eligiblePlayers.push(player)
+      eligiblePlayers.push(player);
     }
   }
 
@@ -202,7 +202,7 @@ function getStartingSlots(rawLineup) {
 }
 
 // -------- EXPORTED FUNCTIONS ---------
-export function getTotal(startingLineup) {
+function getTotal(startingLineup) {
   
   let total = 0.00;
   for (let player in startingLineup) {
@@ -214,30 +214,29 @@ export function getTotal(startingLineup) {
   return total;
 }
 
-export function getStartingLineup(rawLineup) {
+function getStartingLineup(rawLineup) {
   
   let startingLineup = [];
+  for (let player in rawLineup) {
 
-  // Loop through the starting slots and assign the slot to handle errors with scraping's initial assignment
-  for (let slot in rawLineup) {
-    let player = rawLineup[slot];
-
-    if (player.SLOT != 'BE') {
-      startingLineup.push(player);
+    let notOnBenchOrIr = (rawLineup[player].SLOT != 'Bench' && rawLineup[player].SLOT != 'IR'); 
+    if (notOnBenchOrIr) {
+      startingLineup.push(rawLineup[player]);
     }
   }
 
   return startingLineup;
 }
 
-export function getOptimalStartingLineup(rawLineup) {
+function getOptimalStartingLineup(rawLineup) {
 
+  let startingSlots = getStartingSlots(rawLineup);
   let optimalStartingLineup = [];
 
   // Fill the starting slots with the highest FPTSr at the position (fill FLEX last)
-  let availablePlayers = rawLineup;
-  for (let slot in rawLineup) {
-    let position = rawLineup[slot].SLOT;
+  for (let slot in startingSlots) {
+    let position = startingSlots[slot];
+    console.log(`evaluating position: ${position}`);
     
     // Depending on the slot's position...
     // -- get the highest scoring player at the position
@@ -246,48 +245,61 @@ export function getOptimalStartingLineup(rawLineup) {
     let player = {};
     switch (position) {
       case 'QB':
-        player = getHighestScoringQB(availablePlayers);
+        player = getHighestScoringQB(rawLineup);
+        player.SLOT = 'QB';
         optimalStartingLineup.push(player);
-        availablePlayers = availablePlayers.filter(function(item) {return item.PLAYER != player.PLAYER;})
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'RB':
-        player = getHighestScoringRB(availablePlayers);
+        player = getHighestScoringRB(rawLineup);
+        player.SLOT = 'RB';
         optimalStartingLineup.push(player);
-        availablePlayers = availablePlayers.filter(function(item) {return item.PLAYER != player.PLAYER;})
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'WR':
-        player = getHighestScoringWR(availablePlayers);
+        player = getHighestScoringWR(rawLineup);
+        player.SLOT = 'WR';
         optimalStartingLineup.push(player);
-        availablePlayers = availablePlayers.filter(function(item) {return item.PLAYER != player.PLAYER;})
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'TE':
-        player = getHighestScoringTE(availablePlayers);
+        player = getHighestScoringTE(rawLineup);
+        player.SLOT = 'TE';
         optimalStartingLineup.push(player);
-        availablePlayers = availablePlayers.filter(function(item) {return item.PLAYER != player.PLAYER;})
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'D/ST':
-        player = getHighestScoringD(availablePlayers);
+        player = getHighestScoringD(rawLineup);
+        player.SLOT = 'D/ST';
         optimalStartingLineup.push(player);
-        availablePlayers = availablePlayers.filter(function(item) {return item.PLAYER != player.PLAYER;})
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'K':
-        player = getHighestScoringK(availablePlayers);
+        player = getHighestScoringK(rawLineup);
+        player.SLOT = 'K';
         optimalStartingLineup.push(player);
-        availablePlayers = availablePlayers.filter(function(item) {return item.PLAYER != player.PLAYER;})
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
       
       case 'FLEX':
-        player = getHighestScoringFLEX(availablePlayers);
+        player = getHighestScoringFLEX(rawLineup);
+        player.SLOT = 'FLEX';
         optimalStartingLineup.push(player);
-        availablePlayers = availablePlayers.filter(function(item) {return item.PLAYER != player.PLAYER;})
+        rawLineup = rawLineup.filter(rawLineupPlayer => rawLineupPlayer != player);
         break
     }
   }
 
   return optimalStartingLineup;
+}
+
+module.exports = {
+  getTotal,
+  getStartingLineup,
+  getOptimalStartingLineup
 }

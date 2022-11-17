@@ -10,7 +10,13 @@ const teamSchema = new Schema({
     required: true,
     unique: true,
   },
-  lineups: [
+  startingLineups: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Lineup'
+    }
+  ],
+  optimalLineups: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Lineup'

@@ -2,17 +2,6 @@ import { Builder, By, until } from 'selenium-webdriver';
 import 'chromedriver';
 import { getStartingLineup, getOptimalStartingLineup, getTotal } from './lineupOptimizer.js';
 
-function getActualNumTeams(num) {
-  // If 'numTeams' >14, then
-  // -- divisional standings must be removed from 'teamEls'
-  if (num > 14) {
-    // Since divisional standings account for double the teams, we halve numTeams
-    return num / 2;
-  } else {
-    return num;
-  }
-};
-
 export async function getTeams(leagueId, seasonId) {
   
   // Build the driver for navigating the url via Chrome
@@ -39,9 +28,12 @@ export async function getTeams(leagueId, seasonId) {
 
     // Get the 'boxScoreUrls'
     let boxScoreUrls = getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId);
+    
+    // Get the league's starting lineup slots
+    let startingSlots = await getStartingSlots(driver, leagueId);
 
     // Populate the blank 'rawLineups' arrays in 'teams'
-    await populateRawLineups(driver, boxScoreUrls, teams);
+    await populateRawLineups(driver, boxScoreUrls, teams, startingSlots);
 
     // Populate the blank 'actualLineups' arrays in 'teams'
     await populateActualLineups(teams);
@@ -177,7 +169,60 @@ function getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId) {
   return boxScoreUrls;
 }
 
-async function populateRawLineups(driver, boxScoreUrls, teams) {
+async function getStartingSlots(driver, leagueId) {
+
+  // wait for table elements to load
+  await driver.get(`https://fantasy.espn.com/football/league/settings?leagueId=${leagueId}`);
+  await driver.wait(until.elementLocated(By.className('Table__TD')), 15000);
+
+  // get table element with child element containing 'position'
+  let tableEls = await driver.findElements(By.className('Table'));
+  let iPosTable = 0;
+  for (let iTable = 0; iTable < tableEls.length; iTable++) {
+    let headerEls = await tableEls[iTable].findElements(By.className('Table__THEAD'));
+    
+    // Loop through all the tables associated headers
+    for (let iHead = 0; iHead < headerEls.length; iHead++){
+      
+      // If the header contains the word 'POSITION'
+      await headerEls[iHead].getText().then((text) => {
+        if (text.match('POSITION') != null) {
+
+          // Save this table's headers and index so we can grab the table's data
+          iPosTable = iTable;
+        }
+      });
+    }
+  }
+
+  // get the position table's rows
+  let rowEls = await tableEls[iPosTable].findElements(By.className('data-table__row Table__TR Table__TR--sm Table__odd'));
+
+  // Save each position in the starting lineup as an array 'startingSlots'
+  let startingSlots = []
+  for (let row in rowEls) {
+
+    // rowData is in format: [Position, numStartersAtPosition, maxOnRoster]
+    let rowData = await rowEls[row].getText().then((text) => text.split('\n'));
+
+    // If the row's position has a slot in the starting lineup
+    if (rowData[1] != '0') {
+      let pos = rowData[0].match(/\(.+\)/)[0].replace('(', "").replace(')', "");
+      let numSlots = Number(rowData[1]);
+
+      // Add each slot to the 'startingSlots' array
+      if (pos != 'BE' && pos != 'IR') {
+        for (let i = 0; i < numSlots; i++) {
+          startingSlots.push(pos);
+        }
+      }
+    }
+  }
+
+  return startingSlots;
+}
+
+async function populateRawLineups(driver, boxScoreUrls, teams, startingSlots) {
 
   // Loop through the 'boxScoreUrls'
   for (let iUrl = 0; iUrl < boxScoreUrls.length; iUrl++){
@@ -215,6 +260,14 @@ async function populateRawLineups(driver, boxScoreUrls, teams) {
           // Ignore the 'TOTALS' row for each team
           if (stats[0] != 'TOTALS') {
 
+            // Assign the SLOT based on 'startingSlots' to handle scraping error (wrong SLOT)
+            if (iPlayers < startingSlots.length) {
+              player.SLOT = startingSlots[iPlayers]
+            } else {
+              player.SLOT = 'BE'
+            }
+
+
             // Identify conditions that require handling
             let isEmptyPlayer = (stats[1] == 'Empty');
             let isFreeAgent = (stats[2] == 'FA');
@@ -222,7 +275,6 @@ async function populateRawLineups(driver, boxScoreUrls, teams) {
             
             // Populate the 'player' details
             if (isPlayerWithAllData) {
-              player.SLOT = stats[0];
               player.PLAYER = stats[1];
               player.TEAM = stats[2];
               player.POS = stats[3];
@@ -230,8 +282,8 @@ async function populateRawLineups(driver, boxScoreUrls, teams) {
               player.STATUS = stats[5];
               player.PROJ = stats[6];
               player.FPTS = stats[7];
+
             } else if (isEmptyPlayer) {
-              player.SLOT = stats[0];
               player.PLAYER = 'Empty';
               player.TEAM = '--';
               player.POS = '--';
@@ -239,8 +291,8 @@ async function populateRawLineups(driver, boxScoreUrls, teams) {
               player.STATUS = '--';
               player.PROJ = 0;
               player.FPTS = 0;
+              
             } else if (isFreeAgent) {
-              player.SLOT = stats[0];
               player.PLAYER = stats[1];
               player.TEAM = stats[2];
               player.POS = stats[3];
@@ -281,7 +333,7 @@ function populateActualLineups(teams) {
       let actualLineup = getStartingLineup(rawLineup);
       
       // Push the 'actualLineup' to 'teams'
-      teams[team].actualLineups.push(actualLineup)
+      teams[team].actualLineups.push(actualLineup);
     }
   }
 }
@@ -297,7 +349,7 @@ function populateOptimalLineups(teams) {
 
       // Get the optimalLineup
       let rawLineup = teams[team].rawLineups[i];
-      let optimalLineup = getOptimalStartingLineup(rawLineup);      
+      let optimalLineup = getOptimalStartingLineup(rawLineup);   
       
       // Push the 'optimalLineup' to 'teams'
       teams[team].optimalLineups.push(optimalLineup)
@@ -324,7 +376,7 @@ function populateTotals(teams) {
       let weeklyOptimal = Math.round(getTotal(optimalStarters) * 100) / 100;
       totalOptimal += weeklyOptimal
 
-      let weeklyDeficit = weeklyOptimal - weeklyActual;
+      let weeklyDeficit = weeklyActual - weeklyOptimal;
       if (weeklyDeficit == 0) {
         perfectWeeks += 'star';
       }

@@ -4,6 +4,7 @@ import Table from 'react-bootstrap/Table';
 export default function SeasonSummary() {
   
   // ! Data needed for generating SeasonSummary
+  // (on data query replace 'star' with \u2850)
   const summaryData = [
     {
       name: "Tid, Richie, and a DUI",

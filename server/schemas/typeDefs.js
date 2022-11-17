@@ -16,16 +16,14 @@ const typeDefs = gql`
   type Lineup {
     week: Int
     players: [Player]
-    actualFPTS: Float
-    optimalPlayers: [Player]
-    optimalFPTS: Float
-    deficit: Float
+    totalFPTS: Float
   }
 
   type Team {
     name: String
     id: Int
-    lineups: [Lineup]
+    startingLineups: [Lineup]
+    optimalLineups: [Lineup]
     totalActual: Float
     totalOptimal: Float
     totalDeficit: Float
@@ -47,13 +45,3 @@ const typeDefs = gql`
 `;
 
 module.exports = typeDefs;
-
-// type Team {
-//   name: String
-//   id: Int
-//   lineups: [Lineup]
-//   totalActual: Float
-//   totalOptimal: Float
-//   totalDeficit: Float
-//   perfectWeeks: String
-// }

@@ -11,31 +11,7 @@ const lineupSchema = new Schema({
       ref: 'Player'
     }
   ],
-  actualPlayers: [
-    [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Lineup'
-      }
-    ]
-  ],
-  actualFPTS: {
-    type: Number,
-    required: true,
-  },
-  optimalPlayers: [
-    [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Lineup'
-      }
-    ]
-  ],
-  optimalFPTS: {
-    type: Number,
-    required: true,
-  },
-  deficit: {
+  totalFPTS: {
     type: Number,
     required: true,
   }
