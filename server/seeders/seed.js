@@ -1,13 +1,7 @@
 const db = require('../config/connection');
 const { Team, League, Player, Lineup } = require('../models');
 
-const leagueSeeds = require('./leagueSeeds.json');
-const teamSeeds = require('./teamSeeds.json');
-const lineupSeeds = require('./lineupSeeds.json');
-const playerSeeds = require('./playerSeeds.json');
-
-const sortedSeeds = require('./sorted.json');
-const { getStartingLineup, getTotal, getOptimalStartingLineup } = require('./lineupOptimizer');
+const leagueSortedSeeds = require('./sorted.json');
 
 db.once('open', async () => {
   try {
@@ -18,70 +12,76 @@ db.once('open', async () => {
     await Lineup.deleteMany({});
     await Player.deleteMany({});
 
-    // Populate db models
-    // const leagues = await League.create(leagueSeeds);
-    // const teams = await Team.create(teamSeeds);
-    // const lineups = await Lineup.create(lineupSeeds);
-    // const players = await Player.create(playerSeeds);
+    // Populate db models begins here:
+    const leagueDoc = await League.create(
+      {
+        "id": '84532749',
+        "teams": []
+      }
+    )
 
-    // ! incorporate scrape.js to truly populate these for each team in the league
-    // // Add players to lineup
-    // let numRawLineupPlayers = 15;
-    // for (let i = 0; i < numRawLineupPlayers; i++) {
-    //   let newPlayerId = players[i]._id;
+    // For each team...
+    for (let iTeam = 0; iTeam < leagueSortedSeeds.length; iTeam++){
+      let team = leagueSortedSeeds[iTeam];
       
-    //   // raw
-    //   for (let j = 0; j < lineups.length; j++){
-    //     const tempLineup = lineups[j];
-
-    //     tempLineup.players.push(newPlayerId);
-    //     await tempLineup.save();
-    //   }
-
-    //   // actual
-
-    //   // optimal
-    // }
-    
-    // Add lineups to teams
-
-
-    // Add teams to leagues
-
-    // -------------
-    // For each team, populate the raw, actual, and optimal lineups
-    for (let iTeam = 0; iTeam < sortedSeeds.length; iTeam++){
-      let team = sortedSeeds[iTeam];
+      // Create the Team document in the db and push its _id to a leagueDoc
       let teamDoc = await Team.create({
         "name": team.name,
         "id": team.id,
+        "startingLineups": [],
+        "optimalLineups": [],
         "totalActual": team.totalActual,
         "totalOptimal": team.totalOptimal,
         "totalDeficit": team.totalDeficit,
         "perfectWeeks": team.perfectWeeks
       });
+      leagueDoc.teams.push(teamDoc._id);
 
-      // Loop through the team's raw lineups...
-      for (let iRaw = 0; iRaw < team.rawLineups.length; iRaw++){
-        let week = iRaw + 1;
-        let rawLineup = team.rawLineups[iRaw];
-        // ! connect with helper functions
-        let actualLineup = getStartingLineup(rawLineup);
-        console.log(week);
-        let optimalLineup = getOptimalStartingLineup(rawLineup);
+      // For each team's weekly lineup index...
+      for (let iLineups = 0; iLineups < team.rawLineups.length; iLineups++){
+        let week = iLineups + 1;
+
+        // -------- ACTUAL LINEUP --------
+        let actualLineup = team.actualLineups[iLineups];
         let actualFPTS = Math.round(getTotal(actualLineup)*100)/100;
-        let optimalFPTS = Math.round(getTotal(optimalLineup)*100)/100;
-        let deficit = actualFPTS - optimalFPTS;
-        let lineupsDoc = await Lineup.create(
+        // Create the Player docs
+        let actPlayerDocIds = [];
+        for (let actualPlayer in actualLineup) {
+          let actPlayerDoc = await Player.create(actualLineup[actualPlayer]);
+          actPlayerDocIds.push(actPlayerDoc._id);
+        }
+        // Create the "actualLineupDoc"
+        let actualLineupDoc = await Lineup.create(
           {
             "week": week,
+            "players": actPlayerDocIds,
             "totalFPTS": actualFPTS
           }
-        );        
+        );
+        // Push "actualLineupDoc" to a teamDoc's actualLineups key
+        teamDoc.startingLineups.push(actualLineupDoc);
+        
+        // -------- OPTIMAL LINEUP --------
+        let optimalLineup = team.optimalLineups[iLineups];
+        let optimalFPTS = Math.round(getTotal(optimalLineup)*100)/100;
+        // Create the Player docs
+        let optPlayerDocIds = [];
+        for (let optimalPlayer in optimalLineup) {
+          let optPlayerDoc = await Player.create(optimalLineup[optimalPlayer]);
+          optPlayerDocIds.push(optPlayerDoc._id);
+        }
+        // Create the "optimalLineupDoc"
+        let optimalLineupDoc = await Lineup.create(
+          {
+            "week": week,
+            "players": optPlayerDocIds,
+            "totalFPTS": optimalFPTS
+          }
+        );
+        // Push "optimalLineupDoc" to a teamDoc's optimalLineups key
+        teamDoc.optimalLineups.push(optimalLineupDoc);        
       }
     }
-    // -------------
-
 
     console.log('all done!');
     process.exit(0);
@@ -90,11 +90,14 @@ db.once('open', async () => {
   }
 });
 
+function getTotal(startingLineup) {
+  
+  let total = 0.00;
+  for (let player in startingLineup) {
 
-        // // Loop through the lineup's players
-        // for (let iPlayer = 0; iPlayer < rawLineup.length; iPlayer++){
-        //   let player = rawLineup[iPlayer];
-
-        //   // Add the player to the database
-        //   let playerDb = await Player.create(player);
-        // }
+    let FPTS = parseFloat(startingLineup[player].FPTS);
+    let FPTSDecimals = Math.round(FPTS * 100)/100;
+    total += FPTSDecimals; 
+  }
+  return total;
+}

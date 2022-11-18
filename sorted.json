@@ -1522,7 +1522,15 @@
           "PROJ": "0.0",
           "FPTS": "0.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -3371,7 +3379,7 @@
     "totalActual": 1172.45,
     "totalOptimal": 1233.45,
     "totalDeficit": -61,
-    "perfectWeeks": "starstarstarstar"
+    "perfectWeeks": " , , 4,, 6,, 8,, 10,"
   },
   {
     "name": "Barrie’s Breakfast",
@@ -4896,7 +4904,15 @@
           "PROJ": "--",
           "FPTS": "0.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -6745,7 +6761,7 @@
     "totalActual": 1043.15,
     "totalOptimal": 1134.75,
     "totalDeficit": -91.6,
-    "perfectWeeks": "star"
+    "perfectWeeks": " , , , , , 7,, , , "
   },
   {
     "name": "Team Ruggs",
@@ -8280,7 +8296,15 @@
           "PROJ": "0.0",
           "FPTS": "0.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -10129,7 +10153,7 @@
     "totalActual": 1070.1,
     "totalOptimal": 1166.7,
     "totalDeficit": -96.6,
-    "perfectWeeks": "starstar"
+    "perfectWeeks": " , , , , , , 8,9,, "
   },
   {
     "name": "Rick's Market",
@@ -11654,7 +11678,15 @@
           "PROJ": "--",
           "FPTS": "0.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -13503,7 +13535,7 @@
     "totalActual": 1138.45,
     "totalOptimal": 1256.3,
     "totalDeficit": -117.85,
-    "perfectWeeks": "starstarstar"
+    "perfectWeeks": " , , 4,, , 7,8,, , "
   },
   {
     "name": "Pitts Stain",
@@ -15028,7 +15060,15 @@
           "PROJ": "0.0",
           "FPTS": "0.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -16877,7 +16917,7 @@
     "totalActual": 1058.8,
     "totalOptimal": 1178.2,
     "totalDeficit": -119.4,
-    "perfectWeeks": ""
+    "perfectWeeks": " , , , , , , , , , "
   },
   {
     "name": "King of the Hill",
@@ -18412,7 +18452,15 @@
           "PROJ": "--",
           "FPTS": "0.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -20261,7 +20309,7 @@
     "totalActual": 1187.2,
     "totalOptimal": 1306.7,
     "totalDeficit": -119.5,
-    "perfectWeeks": ""
+    "perfectWeeks": " , , , , , , , , , "
   },
   {
     "name": "Kevin’s Band of Retards",
@@ -21786,7 +21834,15 @@
           "PROJ": "8.0",
           "FPTS": "10.8"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -23635,7 +23691,7 @@
     "totalActual": 1151.25,
     "totalOptimal": 1284.25,
     "totalDeficit": -133,
-    "perfectWeeks": ""
+    "perfectWeeks": " , , , , , , , , , "
   },
   {
     "name": "Glizzy Gladiators",
@@ -25160,7 +25216,15 @@
           "PROJ": "--",
           "FPTS": "0.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -27009,7 +27073,7 @@
     "totalActual": 949.9,
     "totalOptimal": 1094.75,
     "totalDeficit": -144.85,
-    "perfectWeeks": ""
+    "perfectWeeks": " , , , , , , , , , "
   },
   {
     "name": "Champ Champ",
@@ -28534,7 +28598,15 @@
           "PROJ": "19.8",
           "FPTS": "22.25"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -30383,7 +30455,7 @@
     "totalActual": 1142.65,
     "totalOptimal": 1290.85,
     "totalDeficit": -148.2,
-    "perfectWeeks": "star"
+    "perfectWeeks": " , , , , , , , 9,, "
   },
   {
     "name": "GruGru Smith-Gruster",
@@ -31908,7 +31980,15 @@
           "PROJ": "--",
           "FPTS": "0.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -33757,7 +33837,7 @@
     "totalActual": 1038.25,
     "totalOptimal": 1198.65,
     "totalDeficit": -160.4,
-    "perfectWeeks": ""
+    "perfectWeeks": " , , , , , , , , , "
   },
   {
     "name": "Plaxico Burress",
@@ -35282,7 +35362,15 @@
           "PROJ": "5.0",
           "FPTS": "17.0"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -37131,7 +37219,7 @@
     "totalActual": 1217.9,
     "totalOptimal": 1388.4,
     "totalDeficit": -170.5,
-    "perfectWeeks": ""
+    "perfectWeeks": " , , , , , , , , , "
   },
   {
     "name": "Squid Joey",
@@ -38656,7 +38744,15 @@
           "PROJ": "5.8",
           "FPTS": "4.1"
         }
-      ]
+      ],
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG",
+      "FLAG"
     ],
     "actualLineups": [
       [
@@ -40505,6 +40601,6 @@
     "totalActual": 1027.3,
     "totalOptimal": 1201.75,
     "totalDeficit": -174.45,
-    "perfectWeeks": ""
+    "perfectWeeks": " , , , , , , , , , "
   }
 ]

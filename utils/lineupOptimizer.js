@@ -208,7 +208,8 @@ export function getTotal(startingLineup) {
   for (let player in startingLineup) {
 
     let FPTS = parseFloat(startingLineup[player].FPTS);
-    let FPTSDecimals = Math.round(FPTS * 100)/100;
+    let FPTSDecimals = Math.round(FPTS * 100) / 100;
+    // console.log(`${startingLineup[player].PLAYER} scored ${FPTSDecimals}`);
     total += FPTSDecimals; 
   }
   return total;

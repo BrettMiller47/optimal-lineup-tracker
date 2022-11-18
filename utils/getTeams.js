@@ -28,7 +28,7 @@ export async function getTeams(leagueId, seasonId) {
 
     // Get the 'boxScoreUrls'
     let boxScoreUrls = getBoxScoreUrls(teams, weeklyMatchups, leagueId, seasonId);
-    
+
     // Get the league's starting lineup slots
     let startingSlots = await getStartingSlots(driver, leagueId);
 
@@ -111,7 +111,7 @@ function getMatchupDetails(arr) {
 }
 
 async function getWeeklyMatchups(driver) {
-  
+
   // Get the matchup tables for the weeks with data
   let regTables = await driver.findElements(By.className('ResponsiveTable'));
   
@@ -228,7 +228,7 @@ async function populateRawLineups(driver, boxScoreUrls, teams, startingSlots) {
   for (let iUrl = 0; iUrl < boxScoreUrls.length; iUrl++){
     await driver.get(boxScoreUrls[iUrl]);
 
-    // Wait for the page to load
+    // Wait for the player info to load
     await driver.wait(until.elementLocated(By.className('AnchorLink link clr-link pointer')), 15000);
 
     // Get the team names
@@ -244,11 +244,13 @@ async function populateRawLineups(driver, boxScoreUrls, teams, startingSlots) {
     });
 
     // Loop through each table (two tables, one for each team)
+    await driver.wait(until.elementLocated(By.className('Table__TBODY')), 15000);
     let tableEls = await driver.findElements(By.className('Table__TBODY'));
     for (let iTable = 0; iTable < tableEls.length; iTable++){
 
       // Loop through the table's players
       let players = [];
+      await driver.wait(until.elementLocated(By.className('Table__TR Table__TR--lg Table__odd')), 15000);
       let playerEls = await tableEls[iTable].findElements(By.className('Table__TR Table__TR--lg Table__odd'));
       for (let iPlayers = 0; iPlayers < playerEls.length; iPlayers++){
 
@@ -267,11 +269,17 @@ async function populateRawLineups(driver, boxScoreUrls, teams, startingSlots) {
               player.SLOT = 'BE'
             }
 
-
             // Identify conditions that require handling
             let isEmptyPlayer = (stats[1] == 'Empty');
             let isFreeAgent = (stats[2] == 'FA');
             let isPlayerWithAllData = (!isEmptyPlayer && !isFreeAgent);
+            if (stats.length != 8 && !isEmptyPlayer && !isFreeAgent) {
+              console.log("\nWOAH, THAT'S NOT GOOD");
+              console.log(`stats are:`);
+              for (let z in stats) {
+                console.log(`stats[z] = ${stats[z]}`);
+              }
+            }
             
             // Populate the 'player' details
             if (isPlayerWithAllData) {
@@ -307,11 +315,21 @@ async function populateRawLineups(driver, boxScoreUrls, teams, startingSlots) {
           }
         });
       }
+
+      // Try to flag a matchup that is incomplete
+      try {
+        await driver.findElement(By.className('statusValue fw-bold'));
+        var isFlagged = true;
+      } catch (NoSuchElementFound) {
+        var isFlagged = false;
+      }
       
       // Push 'players' to the appropriate team in 'teams'
       let name = names[iTable];
       teams.map((team) => {
-        if (team.name == name) {
+        if (isFlagged) {
+          team.rawLineups.push('FLAG');
+        } else if (team.name == name) {
           team.rawLineups.push(players);
         }
       });
@@ -327,13 +345,14 @@ function populateActualLineups(teams) {
     // Loop through the team's 'rawLineups'
     let actualLineups = [];
     for (let i = 0; i < teams[team].rawLineups.length; i++){
-
-      // Get the actualLineup
       let rawLineup = teams[team].rawLineups[i];
-      let actualLineup = getStartingLineup(rawLineup);
-      
-      // Push the 'actualLineup' to 'teams'
-      teams[team].actualLineups.push(actualLineup);
+
+      if (rawLineup != 'FLAG') {
+        
+        // Push the 'actualLineup' to 'teams'
+        let actualLineup = getStartingLineup(rawLineup);        
+        teams[team].actualLineups.push(actualLineup);
+      }
     }
   }
 }
@@ -345,14 +364,15 @@ function populateOptimalLineups(teams) {
 
     // Loop through the team's 'rawLineups'
     let optimalLineups = [];
-    for (let i = 0; i < teams[team].rawLineups.length; i++){
-
-      // Get the optimalLineup
+    for (let i = 0; i < teams[team].rawLineups.length; i++) {
       let rawLineup = teams[team].rawLineups[i];
-      let optimalLineup = getOptimalStartingLineup(rawLineup);   
-      
-      // Push the 'optimalLineup' to 'teams'
-      teams[team].optimalLineups.push(optimalLineup)
+
+      if (rawLineup != 'FLAG') {
+
+        // Push the 'optimalLineup' to 'teams'
+        let optimalLineup = getOptimalStartingLineup(rawLineup);
+        teams[team].optimalLineups.push(optimalLineup)
+      }
     }
   }
 }
@@ -365,7 +385,7 @@ function populateTotals(teams) {
     let totalOptimal = 0;
     let totalDeficit = 0;
     let perfectWeeks = '';
-    let weeksWithData = teams[team].rawLineups.length;
+    let weeksWithData = teams[team].actualLineups.length;
     for (let i = 0; i < weeksWithData; i++){
 
       let actualStarters = teams[team].actualLineups[i];
@@ -378,7 +398,11 @@ function populateTotals(teams) {
 
       let weeklyDeficit = weeklyActual - weeklyOptimal;
       if (weeklyDeficit == 0) {
-        perfectWeeks += 'star';
+        perfectWeeks += `${i+1},`;
+      } else if (i == 0) {
+        perfectWeeks += ' ';
+      } else {
+        perfectWeeks += ', ';
       }
       totalDeficit += weeklyDeficit;
     }
