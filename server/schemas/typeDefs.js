@@ -2,7 +2,6 @@ const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
   type Player {
-    _id: ID
     SLOT: String
     PLAYER: String
     TEAM: String

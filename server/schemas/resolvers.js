@@ -3,11 +3,11 @@ const { Player, Lineup, Team, League } = require('../models');
 const resolvers = {
   Query: {
     players: async () => {
-      return await Player.find();
+      return await Player.find(); 
     },
 
     player: async (parent, args) => {
-      return await Player.findById(args.id);
+      return await Player.findOne({ _id: args.id });
     },
 
     lineups: async () => {
@@ -15,11 +15,29 @@ const resolvers = {
     },
 
     teams: async () => {
-      return await Team.find().populate('lineups');
+      return await Team.find().populate({
+        path: 'startingLineups',
+        populate: 'players'
+      }).populate({
+        path: 'optimalLineups',
+        populate: 'players'
+      });
     },
 
     leagues: async () => {
-      return await League.find().populate('teams');
+      return await League.find().populate({
+        path: 'teams',
+        populate: {
+          path: 'startingLineups',
+          populate: 'players'
+        }
+      }).populate({
+        path: 'teams',
+        populate: {
+          path: 'optimalLineups',
+          populate: 'players'
+        }
+      });
     }
   },
 
