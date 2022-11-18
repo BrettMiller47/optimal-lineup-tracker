@@ -6,7 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function WeeklySummary() {
   
+  // ! State variable for star showing if perfect week
+
   // ! State variable for weekNum (default to most recent week)
+  
   // ! Apollo query for 'teamsThisWeek'
   const teamsThisWeek = [
     {
