@@ -24,7 +24,7 @@ db.once('open', async () => {
     for (let iTeam = 0; iTeam < leagueSortedSeeds.length; iTeam++){
       let team = leagueSortedSeeds[iTeam];
       
-      // Create the Team document in the db and push its _id to a leagueDoc
+      // Create the Team document in the db
       let teamDoc = await Team.create({
         "name": team.name,
         "id": team.id,
@@ -35,10 +35,12 @@ db.once('open', async () => {
         "totalDeficit": team.totalDeficit,
         "perfectWeeks": team.perfectWeeks
       });
+      // Push the team to a leagueDoc
       leagueDoc.teams.push(teamDoc._id);
+      await leagueDoc.save();
 
       // For each team's weekly lineup index...
-      for (let iLineups = 0; iLineups < team.rawLineups.length; iLineups++){
+      for (let iLineups = 0; iLineups < team.actualLineups.length; iLineups++){
         let week = iLineups + 1;
 
         // -------- ACTUAL LINEUP --------
@@ -60,6 +62,7 @@ db.once('open', async () => {
         );
         // Push "actualLineupDoc" to a teamDoc's actualLineups key
         teamDoc.startingLineups.push(actualLineupDoc);
+        await teamDoc.save();
         
         // -------- OPTIMAL LINEUP --------
         let optimalLineup = team.optimalLineups[iLineups];
@@ -79,9 +82,11 @@ db.once('open', async () => {
           }
         );
         // Push "optimalLineupDoc" to a teamDoc's optimalLineups key
-        teamDoc.optimalLineups.push(optimalLineupDoc);        
+        teamDoc.optimalLineups.push(optimalLineupDoc);  
+        await teamDoc.save();
       }
     }
+
 
     console.log('all done!');
     process.exit(0);
