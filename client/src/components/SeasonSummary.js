@@ -1,7 +1,7 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 
-export default function SeasonSummary() {
+export default function SeasonSummary(props) {
   
   // ! Data needed for generating SeasonSummary
   // (on data query replace 'star' with \u2850)

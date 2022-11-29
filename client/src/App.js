@@ -1,15 +1,32 @@
 import './App.css';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import LeagueSummary from './pages/LeagueSummary';
-import ThemeProvider from './utils/ThemeContext';
+
+const client = new ApolloClient({
+  uri: '/graphql',
+  cache: new InMemoryCache(),
+});
 
 function App() {
 
   return (
-    <ThemeProvider>
-      <Home />
-      <LeagueSummary />
-    </ThemeProvider>
+    <ApolloProvider client={client}>
+      <Router>
+        <Routes>
+          <Route 
+            path="/" 
+            element={<Home />} 
+          />
+          <Route 
+            path="/leagueSummary" 
+            element={<LeagueSummary />} 
+          />
+        </Routes>
+      </Router>
+    </ApolloProvider>
   );
 }
 

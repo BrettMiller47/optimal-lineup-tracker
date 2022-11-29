@@ -24,6 +24,16 @@ const resolvers = {
       });
     },
 
+    team: async (parent, args) => {
+      return await Team.findOne({_id: args.id}).populate({
+        path: 'startingLineups',
+        populate: 'players'
+      }).populate({
+        path: 'optimalLineups',
+        populate: 'players'
+      });
+    },
+
     leagues: async () => {
       return await League.find().populate({
         path: 'teams',
@@ -38,14 +48,25 @@ const resolvers = {
           populate: 'players'
         }
       });
-    }
+    },
+
+    league: async (parent, args) => {
+      return await League.findOne({id: args.id}).populate({
+        path: 'teams',
+        populate: {
+          path: 'startingLineups',
+          populate: 'players'
+        }
+      }).populate({
+        path: 'teams',
+        populate: {
+          path: 'optimalLineups',
+          populate: 'players'
+        }
+      });
+    },
   },
 
-  // Mutation: {
-  //   addTeam: async (parent, { name, id, totalActual, totalOptimal, totalDeficit, perfectWeeks}) => {
-  //     return Team.create({ name, id, totalActual, totalOptimal, totalDeficit, perfectWeeks});
-  //   },
-  // },
 };
 
 module.exports = resolvers;

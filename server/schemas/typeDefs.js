@@ -39,7 +39,9 @@ const typeDefs = gql`
     player(id: ID!): Player
     lineups: [Lineup]!
     teams: [Team]!
+    team(id: ID!): Team 
     leagues: [League]!
+    league(id: Int): League
   }
 `;
 
