@@ -18,8 +18,6 @@ export default function LeagueSummary() {
     variables: {leagueId: leagueId}
   });
   const teams = data?.league.teams || [];
-  console.log('teams')
-  console.log(teams);
 
   // Declare a state variable to track the week for the 'weeklySummary' component
   // const [week, setWeek] = useState(data.league.teams.startingLineups.length + 1);

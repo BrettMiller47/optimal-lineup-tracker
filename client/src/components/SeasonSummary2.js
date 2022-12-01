@@ -27,11 +27,13 @@ export default function SeasonSummary2(props) {
     <>
       <Table hover>
         <thead style={styles.header}>
-          <th>Perfect Weeks</th>
-          <th>Team</th>
-          <th>Start/Sit Deficit</th>
-          <th>Actual Points</th>
-          <th>Potential Points</th>
+          <tr>
+            <th>Perfect Weeks</th>
+            <th>Team</th>
+            <th>Start/Sit Deficit</th>
+            <th>Actual Points</th>
+            <th>Potential Points</th>
+          </tr>
         </thead>
         <tbody>
           {props.teams.map((team, i) => 

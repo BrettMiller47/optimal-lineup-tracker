@@ -410,7 +410,7 @@ export default function WeeklySummary() {
     <>
       {/* Create a row for each team */}
       {teamsThisWeek.map((team, i)=>
-        <>
+        <div key={i}>
           {/* Divider for teams */}
           <Row className='d-flex justify-content-center flex-wrap'>
             <Col xs={9} style={styles.divider}>
@@ -462,7 +462,7 @@ export default function WeeklySummary() {
             </Row>
 
           </Container>
-        </>
+        </div>
       )}
     </>
   );
