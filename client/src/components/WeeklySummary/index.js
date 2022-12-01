@@ -5,7 +5,7 @@ import Card from './Card';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function WeeklySummary(props) {
-
+  
   const styles = {
     container: {
       display: 'flex',
@@ -15,15 +15,19 @@ export default function WeeklySummary(props) {
       borderBottom: '3px solid black',
       marginTop: '1.5rem',
       marginBottom: '1.5rem'
-    },
+    }
   }
 
   const idxLineups = props.week - 1;
+  const teamsCopy = [...props.teams];
+  const sortedTeams = teamsCopy.sort((a, b) =>
+    (a.optimalTotals[idxLineups] - a.startingTotals[idxLineups]) - 
+    (b.optimalTotals[idxLineups] - b.startingTotals[idxLineups]));
 
   return (
     <>
       {/* Create a row for each team */}
-      {props.teams.map((team, i)=>
+      {sortedTeams.map((team, i)=>
         <div key={i}>
           {/* Divider for teams */}
           <Row className='d-flex justify-content-center flex-wrap'>
@@ -59,7 +63,7 @@ export default function WeeklySummary(props) {
                     </Table>
                   </Col>
                   <Col xs={6} sm={12} className='text-center'>
-                    {(team.startingTotals[idxLineups] - team.optimalTotals[idxLineups]).toFixed(2) === 0.00 ? (
+                    {(team.startingTotals[idxLineups] - team.optimalTotals[idxLineups]).toFixed(2) === '0.00' ? (
                       <h1>⭐</h1>
                     ) :
                       <h1> </h1> 
