@@ -1,3 +1,4 @@
+import { split } from '@apollo/client';
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 
@@ -20,6 +21,17 @@ export default function SeasonSummary(props) {
     }
   }
 
+  const starsByTeam = props.teams.map((team) => {
+    let weeks = team.perfectWeeks;
+    let starsCsv = weeks.replace(/\d{1,2}/g, '⭐');
+    let starsCount = starsCsv.split('⭐').length-1;
+    let starsStr = '⭐'.repeat(starsCount);
+    return starsStr;
+  });
+   
+
+  console.log(starsByTeam);
+
   return (
     <>
       <Table hover>
@@ -35,7 +47,7 @@ export default function SeasonSummary(props) {
         <tbody>
           {props.teams.map((team, i) => 
           <tr key={i}>
-            <td style={styles.stars}>⭐</td> 
+            <td style={styles.stars}>{starsByTeam[i]}</td> 
             <td style={styles.team}>{team.name}</td> 
             <td style={styles.deficit}>{team.totalDeficit}</td> 
             <td>{team.totalActual}</td> 
