@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import SeasonSummary from '../components/SeasonSummary';
 import WeeklySummary from '../components/WeeklySummary';
-import SeasonSummary2 from '../components/SeasonSummary2';
 import Spinner from 'react-bootstrap/Spinner';
 
 import { useQuery } from '@apollo/client';
@@ -31,7 +30,7 @@ export default function LeagueSummary() {
         <Spinner animation="border" role="status"></Spinner>
       ) : (
         <div>
-          <SeasonSummary2 teams={teams} />
+          <SeasonSummary teams={teams} />
           <WeeklySummary teams={teams} />        
         </div>
       )}
