@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap' 
 import Table from 'react-bootstrap/Table';
 import Card from './Card';
@@ -19,8 +19,6 @@ export default function WeeklySummary(props) {
   }
 
   const idxLineups = props.week - 1;
-
-  const [perfectWeek, setPerfectWeek] = useState(false);
 
   return (
     <>
@@ -55,16 +53,16 @@ export default function WeeklySummary(props) {
                         </tr>
                         <tr>
                           <td>Start/Sit Deficit:</td>
-                          <td>{(team.optimalTotals[idxLineups] - team.startingTotals[idxLineups]).toFixed(2)}</td>
+                          <td>{(team.startingTotals[idxLineups] - team.optimalTotals[idxLineups]).toFixed(2)}</td>
                         </tr>
                       </tbody>
                     </Table>
                   </Col>
                   <Col xs={6} sm={12} className='text-center'>
-                    {(team.optimalTotals[idxLineups] - team.startingTotals[idxLineups]).toFixed(2) == 0.00 ? (
+                    {(team.startingTotals[idxLineups] - team.optimalTotals[idxLineups]).toFixed(2) === 0.00 ? (
                       <h1>⭐</h1>
                     ) :
-                      <h1></h1> 
+                      <h1> </h1> 
                     }
                   </Col>
                 </Row>
@@ -86,17 +84,4 @@ export default function WeeklySummary(props) {
       )}
     </>
   );
-}
-
-function getTotal(startingLineup) {
-  
-  let total = 0.00;
-  for (let player in startingLineup) {
-
-    let FPTS = parseFloat(startingLineup[player].FPTS);
-    let FPTSDecimals = Math.round(FPTS * 100) / 100;
-    // console.log(`${startingLineup[player].PLAYER} scored ${FPTSDecimals}`);
-    total += FPTSDecimals; 
-  }
-  return total;
 }

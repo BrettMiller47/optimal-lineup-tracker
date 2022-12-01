@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row } from 'react-bootstrap' 
 import SeasonSummary from '../components/SeasonSummary';
+import Footer from '../components/Footer';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import WeeklySummary from '../components/WeeklySummary';
@@ -48,7 +49,8 @@ export default function LeagueSummary() {
             </Row>
           </Container>
 
-          <WeeklySummary teams={teams} week={week} />        
+          <WeeklySummary teams={teams} week={week} />
+          <Footer />  
         </div>
       )}
     </>
