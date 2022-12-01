@@ -1,4 +1,6 @@
 import * as fs from 'fs';
+import { fileURLToPath } from 'url';
+import {dirname} from 'path';
 import { getTeams } from './utils/getTeams.js';
 
 // Step 1) Get the teams
@@ -12,7 +14,10 @@ let sorted = teams.sort((a, b) => (a.totalDeficit < b.totalDeficit) ? 1 : -1);
 // Step 3) Write the sorted teams to JSON format
 let data = JSON.stringify(sorted, null, 2);
 
-fs.writeFile('sorted.json', data, err => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+fs.writeFile(__dirname + '/server/seeders/sorted.json', data, err => {
   if (err) {
     throw err
   }
