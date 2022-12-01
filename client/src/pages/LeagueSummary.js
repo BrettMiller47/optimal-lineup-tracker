@@ -1,5 +1,8 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { Container, Row } from 'react-bootstrap' 
 import SeasonSummary from '../components/SeasonSummary';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import WeeklySummary from '../components/WeeklySummary';
 import Spinner from 'react-bootstrap/Spinner';
 
@@ -18,11 +21,10 @@ export default function LeagueSummary() {
   });
   const teams = data?.league.teams || [];
 
-  // Declare a state variable to track the week for the 'weeklySummary' component
-  // const [week, setWeek] = useState(data.league.teams.startingLineups.length + 1);
-  // const handleWeekChange = () => {
-  //   console.log('handling week change');
-  // };
+  const [week, setWeek] = useState(1);
+  const handleWeekSelection = (e) => {
+    setWeek(e);
+  };
 
   return (
     <>
@@ -31,7 +33,23 @@ export default function LeagueSummary() {
       ) : (
         <div>
           <SeasonSummary teams={teams} />
-          <WeeklySummary teams={teams} />        
+          
+          {/* Weekly Dropdown Selector */}
+          <Container className='d-flex'>
+            <Row className='d-flex p-2 align-items-center'>
+              <DropdownButton onSelect={handleWeekSelection} id="weekDropdown" title="Week" variant='secondary'>
+                {teams[0].startingLineups.map((week, i) => 
+                  <Dropdown.Item eventKey={i+1} key={i}>Week {i+1}</Dropdown.Item>      
+                )}
+              </DropdownButton>
+            </Row>
+            <Row className='d-flex p-2 align-items-center'>
+              <h5>{week}</h5>
+            </Row>
+          </Container>
+
+
+          <WeeklySummary teams={teams} week={week} />        
         </div>
       )}
     </>

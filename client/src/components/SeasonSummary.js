@@ -28,9 +28,6 @@ export default function SeasonSummary(props) {
     let starsStr = '⭐'.repeat(starsCount);
     return starsStr;
   });
-   
-
-  console.log(starsByTeam);
 
   return (
     <>

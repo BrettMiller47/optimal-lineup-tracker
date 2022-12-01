@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function WeeklySummary() {
   
+
   const teamsThisWeek = [
     {
       name: "Tid, Richie, and a DUI",
