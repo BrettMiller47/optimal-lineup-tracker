@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Table from 'react-bootstrap/Table';
 
 export default function Card(props) {
@@ -6,6 +6,7 @@ export default function Card(props) {
   const styles = {
     card: {
       boxShadow: '0px 0px 5px black',
+      width: '19rem'
     }
   }
 
@@ -14,7 +15,7 @@ export default function Card(props) {
       <Table style={styles.card}>
         <tbody>
           {/* Create a row for each player in team */}
-          {props.lineup.map((player, i) =>
+          {props.lineup.players.map((player, i) =>
             <tr key={i}>
               <td>{player.SLOT}</td>
               <td>{player.PLAYER}</td>

@@ -16,11 +16,17 @@ const teamSchema = new Schema({
       ref: 'Lineup'
     }
   ],
+  startingTotals: [
+    { type: Number }
+  ],
   optimalLineups: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Lineup'
     }
+  ],
+  optimalTotals: [
+    { type: Number }
   ],
   totalActual: {
     type: Number,

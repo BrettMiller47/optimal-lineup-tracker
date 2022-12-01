@@ -48,7 +48,6 @@ export default function LeagueSummary() {
             </Row>
           </Container>
 
-
           <WeeklySummary teams={teams} week={week} />        
         </div>
       )}

@@ -69,7 +69,9 @@ async function getIdsAndNames(driver) {
     team.id = id;
     team.rawLineups = [];
     team.actualLineups = [];
+    team.actualTotals = [];
     team.optimalLineups = [];
+    team.optimalTotals = [];
   
     teams.push(team);
   }
@@ -344,6 +346,7 @@ function populateActualLineups(teams) {
     
     // Loop through the team's 'rawLineups'
     let actualLineups = [];
+    let totals = [];
     for (let i = 0; i < teams[team].rawLineups.length; i++){
       let rawLineup = teams[team].rawLineups[i];
 
@@ -352,6 +355,10 @@ function populateActualLineups(teams) {
         // Push the 'actualLineup' to 'teams'
         let actualLineup = getStartingLineup(rawLineup);        
         teams[team].actualLineups.push(actualLineup);
+        
+        // Push the actualLineup's total to 'actualTotals'
+        let total = getTotal(actualLineup);
+        teams[team].actualTotals.push(total)
       }
     }
   }
@@ -364,6 +371,7 @@ function populateOptimalLineups(teams) {
 
     // Loop through the team's 'rawLineups'
     let optimalLineups = [];
+    let totals = [];
     for (let i = 0; i < teams[team].rawLineups.length; i++) {
       let rawLineup = teams[team].rawLineups[i];
 
@@ -372,6 +380,10 @@ function populateOptimalLineups(teams) {
         // Push the 'optimalLineup' to 'teams'
         let optimalLineup = getOptimalStartingLineup(rawLineup);
         teams[team].optimalLineups.push(optimalLineup)
+
+        // Push the optimalLineup's total to 'optimalTotals'
+        let total = getTotal(optimalLineup);
+        teams[team].optimalTotals.push(total)
       }
     }
   }

@@ -22,7 +22,9 @@ const typeDefs = gql`
     name: String
     id: Int
     startingLineups: [Lineup]
+    startingTotals: [Float]
     optimalLineups: [Lineup]
+    optimalTotals: [Float]
     totalActual: Float
     totalOptimal: Float
     totalDeficit: Float
