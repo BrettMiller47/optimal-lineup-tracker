@@ -17,7 +17,7 @@ export default function Card(props) {
           {/* Create a row for each player in team */}
           {props.lineup.players.map((player, i) =>
             <tr key={i}>
-              <td>{player.SLOT}</td>
+              <td>{props.positionOrder[i]}</td>
               <td>{player.PLAYER}</td>
               <td>{player.FPTS}</td>
             </tr>

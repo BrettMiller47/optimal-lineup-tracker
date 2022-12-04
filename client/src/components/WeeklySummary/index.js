@@ -24,7 +24,9 @@ export default function WeeklySummary(props) {
     (a.optimalTotals[idxLineups] - a.startingTotals[idxLineups]) - 
     (b.optimalTotals[idxLineups] - b.startingTotals[idxLineups]));
 
-  console.log(+((sortedTeams[0].startingTotals[idxLineups] - sortedTeams[0].optimalTotals[idxLineups]).toFixed(2)));
+  const samplePlayers = sortedTeams[0].startingLineups[0].players;
+  const positionOrder = samplePlayers.map((player) => player.SLOT);
+  
   return (
     <>
       {/* Create a row for each team */}
@@ -75,12 +77,12 @@ export default function WeeklySummary(props) {
 
               {/* Col for Actual */}
               <Col xs={12} sm={4}>
-                <Card lineup={team.startingLineups[idxLineups]} style={styles.card} />
+                <Card lineup={team.startingLineups[idxLineups]} positionOrder={positionOrder} style={styles.card} />
               </Col>
 
               {/* Col for Optimal */}
               <Col xs={12} sm={4}>
-                <Card lineup={team.optimalLineups[idxLineups]} style={styles.card} />
+                <Card lineup={team.optimalLineups[idxLineups]} positionOrder={positionOrder} style={styles.card} />
               </Col>
             </Row>
 
