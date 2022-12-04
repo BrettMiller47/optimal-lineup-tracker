@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Card, Button, Form } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function LeagueInput() {
   
@@ -16,16 +16,29 @@ export default function LeagueInput() {
     }
   }
 
+  const [isValidId, setIsValidId] = useState(false);
+  const handleIdChange = (e) => {
+    
+    // check if there is a match for 8 numerical characters
+    let idRegexMatch = e.target.value.match('^[0-9]{8}$');
+    
+    // If a match is found..
+    if (idRegexMatch != null) {
+      setIsValidId(true);
+      document.getElementById('leagueId').style.borderColor = 'green';
+      document.getElementById('leagueId').style.boxShadow = '0 0 0 0.1rem green';
+
+    // Otherwise...
+    } else {
+      setIsValidId(false);
+      document.getElementById('leagueId').style.borderColor = 'red';
+      document.getElementById('leagueId').style.boxShadow = '0 0 0 0.1rem red';
+    }
+  }
+
   const handleLeagueInput = () => {
     let leagueId = document.getElementById('leagueId').value;
     localStorage.setItem('leagueId', leagueId);
-  }
-
-  let navigate = useNavigate(); 
-  const routeChange = () =>{ 
-    let path = `/leagueSummary`; 
-    navigate(path);
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }
 
   return (
@@ -39,10 +52,16 @@ export default function LeagueInput() {
           <Card.Text>
               <b>Step 2)</b> Copy your "leagueId" from the url and enter it below.
           </Card.Text>  
-          <Form.Control id="leagueId" style={styles.input} aria-describedby="leagueId input" placeholder='Enter leagueId (ex: 84532749)' />
-          <Link to='/leagueSummary' onClick={routeChange}>
+          <Form.Control id="leagueId" maxLength="8" onChange={handleIdChange} style={styles.input} aria-describedby="leagueId input" placeholder='Enter leagueId (ex: 84532749)' />
+
+          {/* don't allow the user to navigate unless isValidId */}
+          {isValidId ?
+            <Link to='/leagueSummary'>
+              <Button onClick={handleLeagueInput}>Run the numbers!</Button>
+            </Link>
+            : 
             <Button onClick={handleLeagueInput}>Run the numbers!</Button>
-          </Link>
+          }
         </Card.Body>
       </Card>
     </>
