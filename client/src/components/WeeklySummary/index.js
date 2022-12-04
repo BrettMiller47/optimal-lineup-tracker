@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap' 
+import {Container, Row, Col } from 'react-bootstrap' 
 import Table from 'react-bootstrap/Table';
 import Card from './Card';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,10 +7,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 export default function WeeklySummary(props) {
   
   const styles = {
-    container: {
-      display: 'flex',
-      flexWrap: 'wrap'
-    },
     divider: {
       borderBottom: '3px solid black',
       marginTop: '1.5rem',
@@ -38,12 +34,13 @@ export default function WeeklySummary(props) {
             </Col>
           </Row>
           
-          <Container style={styles.container}>
-            <Row className='d-flex space-around'>
+
+          <Container fluid>
+            <Row className='d-flex justify-content-center'>
 
               {/* Col for Weekly summary */}
-              <Col xs={12} sm={4}>
-                <Row>
+              <Col xs={12} lg={4} className='p-5'>
+                <Row >
                   <Col xs={6} sm={12}>
                     <h1 className='text-center'>{team.name}</h1>
                   </Col>
@@ -76,16 +73,15 @@ export default function WeeklySummary(props) {
               </Col>
 
               {/* Col for Actual */}
-              <Col xs={12} sm={4}>
-                <Card lineup={team.startingLineups[idxLineups]} positionOrder={positionOrder} style={styles.card} />
+              <Col xs={12} lg={4} className='d-flex justify-content-center'>
+                <Card lineup={team.startingLineups[idxLineups]} positionOrder={positionOrder} />
               </Col>
 
               {/* Col for Optimal */}
-              <Col xs={12} sm={4}>
-                <Card lineup={team.optimalLineups[idxLineups]} positionOrder={positionOrder} style={styles.card} />
+              <Col xs={12} lg={4} className='d-flex justify-content-center'>
+                <Card lineup={team.optimalLineups[idxLineups]} positionOrder={positionOrder} />
               </Col>
             </Row>
-
           </Container>
         </div>
       )}

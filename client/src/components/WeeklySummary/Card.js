@@ -6,7 +6,7 @@ export default function Card(props) {
   const styles = {
     card: {
       boxShadow: '0px 0px 5px black',
-      width: '19rem'
+      width: '21rem',
     }
   }
 
