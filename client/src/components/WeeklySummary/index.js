@@ -24,6 +24,7 @@ export default function WeeklySummary(props) {
     (a.optimalTotals[idxLineups] - a.startingTotals[idxLineups]) - 
     (b.optimalTotals[idxLineups] - b.startingTotals[idxLineups]));
 
+  console.log(+((sortedTeams[0].startingTotals[idxLineups] - sortedTeams[0].optimalTotals[idxLineups]).toFixed(2)));
   return (
     <>
       {/* Create a row for each team */}
@@ -63,7 +64,7 @@ export default function WeeklySummary(props) {
                     </Table>
                   </Col>
                   <Col xs={6} sm={12} className='text-center'>
-                    {(team.startingTotals[idxLineups] - team.optimalTotals[idxLineups]).toFixed(2) === '0.00' ? (
+                    {+((team.startingTotals[idxLineups] - team.optimalTotals[idxLineups]).toFixed(2)) === 0 ? (
                       <h1>⭐</h1>
                     ) :
                       <h1> </h1> 
